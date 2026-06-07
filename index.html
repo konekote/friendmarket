@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FriendMarket — Find someone to talk to</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Analytics placeholder -->
+  <script defer src="js/analytics.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">FriendMarket</div>
+    <nav>
+      <a href="#browse">Browse</a>
+      <a href="#post">Post an Offer</a>
+      <a href="login.html">My Account</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Find someone to talk to about anything.</h1>
+      <p>Post a topic you want to discuss. Find others who are interested. Make a friend.</p>
+      <a class="btn-primary" href="#post">Post your topic</a>
+    </section>
+
+    <section id="browse" class="offers-grid">
+      <!-- Populated by js/offers.js -->
+    </section>
+
+    <section id="post" class="post-form">
+      <h2>Post an Offer</h2>
+      <form id="offer-form">
+        <label>Topic <input type="text" name="topic" placeholder="e.g. History of jazz, stoic philosophy…" required /></label>
+        <label>Description <textarea name="description" rows="3" placeholder="What do you want to talk about?"></textarea></label>
+        <fieldset>
+          <legend>Format</legend>
+          <label><input type="checkbox" name="format" value="written" /> Written</label>
+          <label><input type="checkbox" name="format" value="audio" /> Audio</label>
+          <label><input type="checkbox" name="format" value="video" /> Video</label>
+        </fieldset>
+        <label>Your interests (optional) <input type="text" name="interests" placeholder="e.g. cooking, sci-fi books…" /></label>
+        <button type="submit" class="btn-primary">Post</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 FriendMarket &mdash; <a href="privacy.html">Privacy</a></p>
+  </footer>
+
+  <script src="js/offers.js"></script>
+</body>
+</html>
