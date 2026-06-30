@@ -120,7 +120,7 @@ function MeBar({ account, onSetStatus, onSetPresence }) {
             onBlur={() => commit()}
             onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') { setVal(account.status || ''); e.target.blur(); } }} />
           <button className="fm-status-go fm-btn fm-btn--primary fm-btn--sm"
-            onPointerDown={(e) => { e.preventDefault(); if (inputRef.current) inputRef.current.blur(); else commit(); }}>Post</button>
+            onPointerDown={(e) => { e.preventDefault(); commit(); }}>Post</button>
         </div>
       ) : (
         <button className={'fm-status-show' + (val ? '' : ' is-empty')} onClick={() => setEditing(true)}>
