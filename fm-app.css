@@ -529,7 +529,7 @@
   }
   .fm-app-win { width: 100vw; height: 100dvh; height: 100vh; border-radius: 0; border: none; }
   /* keep the tagline, but let it sit centered under the wordmark */
-  .fm-brand { flex-wrap: wrap; flex: 1; }
+  .fm-brand { flex-wrap: wrap; flex: 0 0 auto; width: fit-content; }
   .fm-tagline { flex-basis: 100%; margin-top: -2px; text-align: center; }
   /* header: brand on the left, hamburger menu on the right */
   .fm-header { padding: 10px 14px; gap: 9px; }
