@@ -34,6 +34,7 @@ function App() {
   const [composeMin, setComposeMin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileUser, setProfileUser] = useState(null);
+  const [profileMin, setProfileMin] = useState(false);
   const menuRef = useRef(null);
   const [recentMine, setRecentMine] = useState([]); // topics you just posted, shown in Browse this session
   const [toasts, setToasts] = useState([]);
@@ -274,7 +275,8 @@ function App() {
       {/* a user's profile (opened by tapping their name) */}
       {profileUser && <UserProfileModal name={profileUser} topics={s.topics} requests={s.requests}
         conversations={s.conversations} account={s.account} requestedTitles={requestedTitles}
-        onReach={(t) => { setReachTopic(t); setReachMin(false); }} onClose={() => setProfileUser(null)} />}
+        hidden={profileMin} onMinimize={() => setProfileMin(true)}
+        onReach={(t) => { setReachTopic(t); setReachMin(false); }} onClose={() => { setProfileUser(null); setProfileMin(false); }} />}
 
       {/* chat windows (minimized ones stay mounted but hidden) */}
       {openChatIds.map((id, i) => (
@@ -288,8 +290,14 @@ function App() {
         onMinimize={() => setReachMin(true)} onClose={() => { setReachTopic(null); setReachMin(false); }} onSend={onSendRequest} />}
 
       {/* dock for minimized popups (bottom-right) */}
-      {(minChats.filter((id) => openChatIds.includes(id)).length > 0 || (reachTopic && reachMin) || (composeOpen && composeMin)) && (
+      {(minChats.filter((id) => openChatIds.includes(id)).length > 0 || (reachTopic && reachMin) || (composeOpen && composeMin) || (profileUser && profileMin)) && (
         <div className="fm-dock">
+          {profileUser && profileMin && (
+            <div className="fm-dock-chip" onClick={() => setProfileMin(false)}>
+              <span>{profileUser}'s profile</span>
+              <button className="fm-dock-x" onPointerDown={(e) => { e.stopPropagation(); setProfileUser(null); setProfileMin(false); }}>{'×'}</button>
+            </div>
+          )}
           {composeOpen && composeMin && (
             <div className="fm-dock-chip" onClick={() => setComposeMin(false)}>
               <span>✎ New topic</span>

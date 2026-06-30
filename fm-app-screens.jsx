@@ -553,7 +553,7 @@ function Stat({ n, label }) {
 }
 
 // ---------- USER PROFILE (someone else's) ----------
-function UserProfileModal({ name, topics, requests, conversations, account, requestedTitles, onReach, onClose }) {
+function UserProfileModal({ name, topics, requests, conversations, account, requestedTitles, onReach, onClose, onMinimize, hidden }) {
   // gather what we know about this person from the seed data
   const theirTopics = topics.filter((t) => t.name === name && !t.mine);
   const fromTopic = topics.find((t) => t.name === name);
@@ -565,11 +565,11 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
   const convCount = Object.values(conversations).filter((c) => c.name === name).length;
 
   return (
-    <div className="fm-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div className={'fm-backdrop' + (hidden ? ' is-hidden' : '')} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="fm-modal fm-win fm-userprofile">
         <div className="fm-titlebar">
           <span className="fm-tb-title"><Hug size={15} /> {isMe ? 'Your profile' : name + '\u2019s profile'}</span>
-          <WinButtons variant="popup" onClose={onClose} />
+          <WinButtons variant="popup" onMinimize={onMinimize} onClose={onClose} />
         </div>
         <div className="fm-modal-body">
           <div className="fm-up-head">
