@@ -12,6 +12,15 @@ function IDot({ presence }) {
   return <span className={'fm-idot fm-idot--' + presence} title={presence}></span>;
 }
 
+// A username that opens that person's profile when clicked.
+function UserName({ name, className, style }) {
+  return (
+    <button type="button" className={'fm-name fm-uname ' + (className || '')}
+      style={{ color: window.fmColorFor(name), ...(style || {}) }}
+      onClick={(e) => { e.stopPropagation(); if (window.fmOpenUser) window.fmOpenUser(name); }}>{name}</button>
+  );
+}
+
 function Badge({ format }) {
   const f = window.FM_FMT[format];
   if (!f) return null;
@@ -56,9 +65,8 @@ function PresenceDropdown({ presence, onChange }) {
   }, []);
   return (
     <div className="fm-presdd" ref={ref}>
-      <button className="fm-presdd-btn" onClick={() => setOpen((o) => !o)}>
+      <button className="fm-presdd-btn" onClick={() => setOpen((o) => !o)} title={FM_PRES_LABEL[presence]} aria-label={'Presence: ' + FM_PRES_LABEL[presence]}>
         <span className={'fm-dot fm-dot--' + presence}></span>
-        <span>{FM_PRES_LABEL[presence]}</span>
         <span className="caret">{'\u25BE'}</span>
       </button>
       {open && (
@@ -124,6 +132,8 @@ function ChatWindow({ conv, myName, index, minimized, onMinimize, onClose, onSen
     onSend(conv.id, t);
   };
 
+  const scrollToEnd = () => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; };
+
   const myColor = window.fmColorFor(myName);
 
   return (
@@ -161,6 +171,7 @@ function ChatWindow({ conv, myName, index, minimized, onMinimize, onClose, onSen
         <React.Fragment>
           <div className="fm-chat-input">
             <input value={draft} placeholder="Type a message…" onChange={(e) => setDraft(e.target.value)}
+              onFocus={() => setTimeout(scrollToEnd, 300)}
               onKeyDown={(e) => { if (e.key === 'Enter') send(); }} />
             <button className="fm-btn fm-btn--primary fm-btn--sm" onClick={send}>Send</button>
           </div>
@@ -182,4 +193,4 @@ function ChatWindow({ conv, myName, index, minimized, onMinimize, onClose, onSen
   );
 }
 
-Object.assign(window, { Hug, HugAva, IDot, Badge, WinButtons, PresenceDropdown, FmtToggle, ChatWindow, FM_PRES_LABEL, ThemeToggle });
+Object.assign(window, { Hug, HugAva, IDot, UserName, Badge, WinButtons, PresenceDropdown, FmtToggle, ChatWindow, FM_PRES_LABEL, ThemeToggle });

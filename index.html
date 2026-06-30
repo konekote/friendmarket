@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
 <title>FriendMarket</title>
 <link rel="stylesheet" href="fm-app.css" />
 <style>
@@ -31,6 +31,10 @@ function App() {
   const [minChats, setMinChats] = useState([]); // minimized chat conv ids
   const [reqTab, setReqTab] = useState('incoming');
   const [composeOpen, setComposeOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [profileUser, setProfileUser] = useState(null);
+  const menuRef = useRef(null);
+  const [recentMine, setRecentMine] = useState([]); // topics you just posted, shown in Browse this session
   const [toasts, setToasts] = useState([]);
   const [theme, setTheme] = useState(() => localStorage.getItem('friendmarket:theme') || 'auto');
   const toastTimers = useRef({});
@@ -49,6 +53,20 @@ function App() {
   const cycleTheme = () => setTheme((t) => t === 'light' ? 'dark' : t === 'dark' ? 'auto' : 'light');
 
   useEffect(() => { window.fmSave(s); }, [s]);
+
+  // open any user's profile from a clicked username
+  useEffect(() => {
+    window.fmOpenUser = (name) => { setProfileUser(name); setMenuOpen(false); };
+    return () => { delete window.fmOpenUser; };
+  }, []);
+
+  // close the mobile menu on an outside click
+  useEffect(() => {
+    if (!menuOpen) return;
+    const h = (e) => { if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [menuOpen]);
 
   const patch = useCallback((fn) => setS((prev) => fn(prev)), []);
 
@@ -69,11 +87,14 @@ function App() {
 
   // ---- posting ----
   const onPost = (t) => {
+    const id = window.fmUid();
     patch((p) => ({
       ...p,
-      topics: [{ id: window.fmUid(), name: p.account.username, presence: p.account.presence, status: p.account.status, title: t.title, desc: t.desc, format: t.format, category: t.category, replies: 0, ts: Date.now(), mine: true }, ...p.topics],
+      topics: [{ id, name: p.account.username, presence: p.account.presence, status: p.account.status, title: t.title, desc: t.desc, format: t.format, category: t.category, replies: 0, ts: Date.now(), mine: true }, ...p.topics],
     }));
-    addToast('\uD83D\uDCEC', 'Your topic is live on the board!');
+    setRecentMine((m) => [id, ...m]);
+    patch((p) => ({ ...p, view: 'browse' }));
+    addToast('\uD83D\uDCEC', 'Your topic is live \u2014 it\u2019s at the top of Browse.');
   };
 
   // ---- reach out ----
@@ -173,6 +194,9 @@ function App() {
     addToast(outcome === 'success' ? '\u2714\uFE0F' : '\uD83D\uDC4B', outcome === 'success' ? 'Nice \u2014 marked as a successful connection!' : 'Marked. Onward to the next one!');
   };
 
+  // navigate between views; clears your just-posted topics from Browse
+  const goView = (v) => { setRecentMine([]); setMenuOpen(false); patch((p) => ({ ...p, view: v })); };
+
   const reset = () => {
     if (!confirm('Reset the prototype to its starting state? Your demo account and chats will be cleared.')) return;
     Object.values(toastTimers.current).forEach(clearTimeout);
@@ -211,23 +235,45 @@ function App() {
             <span className="fm-tagline">find someone to talk to</span>
           </div>
           <nav className="fm-nav">
-            <button className={s.view === 'browse' ? 'is-active' : ''} onClick={() => patch((p) => ({ ...p, view: 'browse' }))}>Browse</button>
-            <button className={s.view === 'requests' ? 'is-active' : ''} onClick={() => patch((p) => ({ ...p, view: 'requests' }))}>
+            <button className={s.view === 'browse' ? 'is-active' : ''} onClick={() => goView('browse')}>Browse</button>
+            <button className={s.view === 'requests' ? 'is-active' : ''} onClick={() => goView('requests')}>
               Chats {pendingIncoming > 0 && <span className="fm-count">{pendingIncoming}</span>}
             </button>
-            <button className={s.view === 'profile' ? 'is-active' : ''} onClick={() => patch((p) => ({ ...p, view: 'profile' }))}>My Account</button>
+            <button className={s.view === 'profile' ? 'is-active' : ''} onClick={() => goView('profile')}>My Account</button>
             <button className="fm-btn fm-btn--primary fm-nav-post" onClick={() => setComposeOpen(true)}>Post topic</button>
           </nav>
+          <div className="fm-menu" ref={menuRef}>
+            <button className="fm-menu-btn" onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" aria-expanded={menuOpen}>
+              <span className="fm-menu-ic">{'\u2630'}</span>
+              {pendingIncoming > 0 && <span className="fm-count fm-menu-count">{pendingIncoming}</span>}
+            </button>
+            {menuOpen && (
+              <div className="fm-menu-dd">
+                <button className={s.view === 'browse' ? 'is-active' : ''} onClick={() => goView('browse')}>Browse</button>
+                <button className={s.view === 'requests' ? 'is-active' : ''} onClick={() => goView('requests')}>
+                  Chats {pendingIncoming > 0 && <span className="fm-count">{pendingIncoming}</span>}
+                </button>
+                <button className={s.view === 'profile' ? 'is-active' : ''} onClick={() => goView('profile')}>My Account</button>
+                <div className="fm-menu-sep"></div>
+                <button className="fm-menu-post" onClick={() => { setComposeOpen(true); setMenuOpen(false); }}>{'\u002B'} Post a new topic</button>
+              </div>
+            )}
+          </div>
         </div>
         <MeBar account={s.account} onSetStatus={onSetStatus} onSetPresence={onSetPresence} />
 
-        {s.view === 'browse' && <BrowseScreen topics={s.topics} onReach={(t) => { setReachTopic(t); setReachMin(false); }} requestedTitles={requestedTitles} />}
+        {s.view === 'browse' && <BrowseScreen topics={s.topics} recentMine={recentMine} onReach={(t) => { setReachTopic(t); setReachMin(false); }} requestedTitles={requestedTitles} />}
         {s.view === 'requests' && <ChatsScreen requests={s.requests} conversations={s.conversations} tab={reqTab} setTab={setReqTab} onAccept={onAccept} onDelete={onDelete} onOpenChat={(id) => { onOpenChat(id); }} />}
         {s.view === 'profile' && <ProfileScreen account={s.account} topics={s.topics} conversations={s.conversations} onReach={(t) => { setReachTopic(t); setReachMin(false); }} theme={theme} resolvedDark={resolvedDark} onCycleTheme={cycleTheme} />}
       </div>
 
       {/* post a new topic modal */}
       {composeOpen && <ComposeModal onPost={onPost} onClose={() => setComposeOpen(false)} />}
+
+      {/* a user's profile (opened by tapping their name) */}
+      {profileUser && <UserProfileModal name={profileUser} topics={s.topics} requests={s.requests}
+        conversations={s.conversations} account={s.account} requestedTitles={requestedTitles}
+        onReach={(t) => { setReachTopic(t); setReachMin(false); }} onClose={() => setProfileUser(null)} />}
 
       {/* chat windows (minimized ones stay mounted but hidden) */}
       {openChatIds.map((id, i) => (

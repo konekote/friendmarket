@@ -104,15 +104,29 @@ function AuthScreen({ onAuth }) {
 // ---------- ME BAR ----------
 function MeBar({ account, onSetStatus, onSetPresence }) {
   const [val, setVal] = React.useState(account.status || '');
+  const [editing, setEditing] = React.useState(false);
+  const inputRef = React.useRef(null);
   React.useEffect(() => { setVal(account.status || ''); }, [account.status]);
+  React.useEffect(() => { if (editing && inputRef.current) inputRef.current.focus(); }, [editing]);
+  const commit = () => { onSetStatus(val.trim()); setEditing(false); };
   return (
     <div className="fm-mebar">
       <PresenceDropdown presence={account.presence} onChange={onSetPresence} />
       <span className="fm-me-name" style={{ color: window.fmColorFor(account.username) }}>{account.username}</span>
-      <input className="fm-status-edit" value={val} placeholder="share a status message…"
-        onChange={(e) => setVal(e.target.value)}
-        onBlur={() => onSetStatus(val.trim())}
-        onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') { setVal(account.status || ''); e.target.blur(); } }} />
+      {editing ? (
+        <div className="fm-status-wrap is-editing">
+          <input ref={inputRef} className="fm-status-edit" value={val} maxLength={50} placeholder="share a status message…"
+            onChange={(e) => setVal(e.target.value)}
+            onBlur={() => commit()}
+            onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') { setVal(account.status || ''); e.target.blur(); } }} />
+          <button className="fm-status-go fm-btn fm-btn--primary fm-btn--sm"
+            onPointerDown={(e) => { e.preventDefault(); if (inputRef.current) inputRef.current.blur(); else commit(); }}>Post</button>
+        </div>
+      ) : (
+        <button className={'fm-status-show' + (val ? '' : ' is-empty')} onClick={() => setEditing(true)}>
+          {val || 'share a status message…'}
+        </button>
+      )}
     </div>
   );
 }
@@ -167,11 +181,15 @@ function TopicRow({ topic, onReach, requested }) {
   const r = topic.replies || 0;
   return (
     <article className={'fm-row' + (mine ? ' is-mine' : '')}>
-      <HugAva />
+      <div className="fm-im-side">
+        <HugAva />
+        <Badge format={topic.format} />
+        <span className="fm-im-time">{window.fmTimeLabel(topic.ts)}</span>
+      </div>
       <div className="fm-body-c">
         <div className="fm-meta">
           <IDot presence={topic.presence} />
-          <span className="fm-name" style={{ color: window.fmColorFor(topic.name) }}>{topic.name}</span>
+          <UserName name={topic.name} />
           <span className="fm-mstatus">{topic.status}</span>
         </div>
         <h3 className="fm-title">{topic.title}</h3>
@@ -233,12 +251,15 @@ function PagedList({ items, perPage, render, empty, containerClass, resetKey }) 
 const FM_SORTS = [['newest', 'Newest first'], ['oldest', 'Oldest first'], ['most', 'Most replies'], ['least', 'Least replies']];
 const FM_PER_PAGE = 10;
 
-function BrowseScreen({ topics, onReach, requestedTitles }) {
+function BrowseScreen({ topics, recentMine, onReach, requestedTitles }) {
   const [q, setQ] = React.useState('');
   const [cat, setCat] = React.useState('All');
   const [sort, setSort] = React.useState('newest');
+  const [showFilters, setShowFilters] = React.useState(false);
+  const filtered = cat !== 'All' || sort !== 'newest';
+  const recent = new Set(recentMine || []);
 
-  let list = topics.filter((t) => !t.mine && window.fmDaysAgo(t.ts) <= window.FM_MAX_DAYS);
+  let list = topics.filter((t) => (!t.mine || recent.has(t.id)) && window.fmDaysAgo(t.ts) <= window.FM_MAX_DAYS);
   if (cat !== 'All') list = list.filter((t) => t.category === cat);
   if (q.trim()) {
     const s = q.toLowerCase();
@@ -259,13 +280,18 @@ function BrowseScreen({ topics, onReach, requestedTitles }) {
             <span className="ic">{'\uD83D\uDD0D'}</span>
             <input value={q} placeholder="Search topics, people, anything…" onChange={(e) => setQ(e.target.value)} />
           </div>
-          <select className="fm-native" value={cat} onChange={(e) => setCat(e.target.value)}>
-            <option value="All">All categories</option>
-            {window.FM_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <select className="fm-native" value={sort} onChange={(e) => setSort(e.target.value)}>
-            {FM_SORTS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
-          </select>
+          <button className={'fm-filter-toggle' + (filtered ? ' has-filters' : '')} onClick={() => setShowFilters((f) => !f)} aria-expanded={showFilters}>
+            <span className="ic">{'\u2261'}</span> Filters{filtered && <span className="dot"></span>}
+          </button>
+          <div className={'fm-filters' + (showFilters ? ' is-open' : '')}>
+            <select className="fm-native" value={cat} onChange={(e) => setCat(e.target.value)}>
+              <option value="All">All categories</option>
+              {window.FM_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select className="fm-native" value={sort} onChange={(e) => setSort(e.target.value)}>
+              {FM_SORTS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+            </select>
+          </div>
         </div>
         <PagedList items={list} perPage={FM_PER_PAGE} containerClass="fm-feed"
           resetKey={q + '|' + cat + '|' + sort}
@@ -324,12 +350,16 @@ function ReachOutModal({ topic, hidden, onMinimize, onClose, onSend }) {
 function IncomingCard({ req, onAccept, onDelete }) {
   return (
     <div className="fm-req fm-im">
-      <HugAva />
+      <div className="fm-im-side">
+        <HugAva />
+        <Badge format={req.format} />
+        <span className="fm-im-time">{window.fmTimeLabel(req.ts)}</span>
+      </div>
       <div className="fm-im-body">
         <span className="fm-time">{window.fmTimeLabel(req.ts)}</span>
         <div className="fm-meta">
           <IDot presence={req.presence} />
-          <span className="fm-name" style={{ color: window.fmColorFor(req.name) }}>{req.name}</span>
+          <UserName name={req.name} />
           {req.senderStatus && <span className="fm-mstatus">{req.senderStatus}</span>}
         </div>
         <h3 className="fm-title">{req.topicTitle}</h3>
@@ -352,12 +382,16 @@ function IncomingCard({ req, onAccept, onDelete }) {
 function SentCard({ req, onOpenChat }) {
   return (
     <div className="fm-req fm-im">
-      <HugAva />
+      <div className="fm-im-side">
+        <HugAva />
+        <Badge format={req.format} />
+        <span className="fm-im-time">{window.fmTimeLabel(req.ts)}</span>
+      </div>
       <div className="fm-im-body">
         <span className="fm-time">{window.fmTimeLabel(req.ts)}</span>
         <div className="fm-meta">
           <IDot presence={req.presence} />
-          <span className="fm-name" style={{ color: window.fmColorFor(req.name) }}>{req.name}</span>
+          <UserName name={req.name} />
         </div>
         <h3 className="fm-title">{req.topicTitle}</h3>
 
@@ -388,9 +422,9 @@ function ChatCard({ c, onOpenChat, past }) {
     <div className={'fm-req fm-im' + (unread ? ' is-unread' : '')}>
       <HugAva />
       <div className="fm-im-body">
-        <div className="fm-meta">
+        <div className="fm-meta fm-meta--wrap">
           <IDot presence={c.presence} />
-          <span className="fm-name" style={{ color: window.fmColorFor(c.name) }}>{c.name}</span>
+          <UserName name={c.name} />
           {unread && <span className="fm-unread-badge">{c.unread} new {c.unread === 1 ? 'reply' : 'replies'}</span>}
           {c.outcome === 'success' && <span className="fm-status-pill fm-status-pill--accepted">{'\u2714'} connected</span>}
           {c.outcome === 'no' && <span className="fm-status-pill fm-status-pill--declined">didn’t work out</span>}
@@ -473,17 +507,14 @@ function ProfileScreen({ account, topics, conversations, onReach, theme, resolve
     <div className="fm-body">
       <div className="fm-scroll">
         <div className="fm-section">
-          <div className="fm-req" style={{ marginTop: 6 }}>
-            <div className="fm-req-top">
+          <div className="fm-profile-card" style={{ marginTop: 6 }}>
+            <div className="fm-profile-head">
               <HugAva />
-              <div className="fm-req-who">
-                <div className="line1">
+              <div className="fm-profile-who">
+                <div className="fm-meta fm-profile-meta">
                   <IDot presence={account.presence} />
-                  <span className="fm-name" style={{ color: window.fmColorFor(account.username), fontSize: 16 }}>{account.username}</span>
-                  <span style={{ color: 'var(--muted)', fontSize: 12 }}>{window.FM_PRES_LABEL[account.presence]}</span>
-                </div>
-                <div className="fm-req-topic" style={{ fontStyle: 'italic' }}>
-                  {account.status ? '“' + account.status + '”' : 'no status yet'}
+                  <span className="fm-name" style={{ color: window.fmColorFor(account.username), fontSize: 'var(--fs-h2)' }}>{account.username}</span>
+                  <span className="fm-profile-status">{account.status ? '“' + account.status + '”' : 'no status yet'}</span>
                 </div>
               </div>
             </div>
@@ -521,4 +552,57 @@ function Stat({ n, label }) {
   );
 }
 
-Object.assign(window, { AuthScreen, MeBar, ComposeModal, TopicRow, Pager, PagedList, BrowseScreen, ReachOutModal, ChatsScreen, ProfileScreen, Stat });
+// ---------- USER PROFILE (someone else's) ----------
+function UserProfileModal({ name, topics, requests, conversations, account, requestedTitles, onReach, onClose }) {
+  // gather what we know about this person from the seed data
+  const theirTopics = topics.filter((t) => t.name === name && !t.mine);
+  const fromTopic = topics.find((t) => t.name === name);
+  const fromReq = requests.find((r) => r.name === name);
+  const fromConv = Object.values(conversations).find((c) => c.name === name);
+  const presence = (fromTopic && fromTopic.presence) || (fromReq && fromReq.presence) || (fromConv && fromConv.presence) || 'offline';
+  const isMe = account && account.username === name;
+  const status = isMe ? (account.status || '') : ((fromTopic && fromTopic.status) || (fromReq && fromReq.senderStatus) || '');
+  const convCount = Object.values(conversations).filter((c) => c.name === name).length;
+
+  return (
+    <div className="fm-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="fm-modal fm-win fm-userprofile">
+        <div className="fm-titlebar">
+          <span className="fm-tb-title"><Hug size={15} /> {isMe ? 'Your profile' : name + '\u2019s profile'}</span>
+          <WinButtons variant="popup" onClose={onClose} />
+        </div>
+        <div className="fm-modal-body">
+          <div className="fm-up-head">
+            <HugAva />
+            <div className="fm-up-who">
+              <div className="fm-up-name">
+                <IDot presence={presence} />
+                <span className="fm-name" style={{ color: window.fmColorFor(name), fontSize: 'var(--fs-h2)' }}>{name}</span>
+              </div>
+              <div className="fm-up-status">{status ? '\u201C' + status + '\u201D' : 'no status yet'}</div>
+            </div>
+          </div>
+          <div className="fm-up-stats">
+            <Stat n={theirTopics.length} label={theirTopics.length === 1 ? 'topic posted' : 'topics posted'} />
+            <Stat n={convCount} label={convCount === 1 ? 'chat with you' : 'chats with you'} />
+          </div>
+
+          <div className="fm-up-section">{isMe ? 'Your topics' : 'Topics ' + name + ' posted'}</div>
+          {theirTopics.length === 0 ? (
+            <div className="fm-empty" style={{ padding: '14px 4px' }}>No open topics right now.</div>
+          ) : (
+            <div className="fm-feed" style={{ padding: '4px 0 2px' }}>
+              {theirTopics.map((t) => (
+                <TopicRow key={t.id} topic={isMe ? { ...t, mine: true } : t}
+                  requested={requestedTitles && requestedTitles.has(t.title)}
+                  onReach={(tp) => { onClose(); onReach(tp); }} />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { AuthScreen, MeBar, ComposeModal, TopicRow, Pager, PagedList, BrowseScreen, ReachOutModal, ChatsScreen, ProfileScreen, Stat, UserProfileModal });
