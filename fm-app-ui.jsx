@@ -30,11 +30,10 @@ function Badge({ format }) {
 // variant: 'main' (all dead) | 'popup' (minimize + close live, maximize dead)
 function WinButtons({ variant, onMinimize, onClose }) {
   const main = variant === 'main';
-  const canMin = !main && !!onMinimize;
   return (
     <span className="fm-tb-dots">
-      <button className={'tb-min' + (!canMin ? ' dead' : '')} title={canMin ? 'Minimize' : ''} tabIndex={-1}
-        onClick={canMin ? onMinimize : undefined}>_</button>
+      <button className={'tb-min' + (main ? ' dead' : '')} title={main ? '' : 'Minimize'} tabIndex={-1}
+        onClick={main ? undefined : onMinimize}>_</button>
       <button className="tb-max dead" title="" tabIndex={-1}>{'\u25A1'}</button>
       <button className={'tb-close' + (main ? ' dead' : '')} title={main ? '' : 'Close'} tabIndex={-1}
         onClick={main ? undefined : onClose}>{'\u00D7'}</button>
