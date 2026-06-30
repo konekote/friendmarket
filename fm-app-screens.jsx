@@ -132,7 +132,7 @@ function MeBar({ account, onSetStatus, onSetPresence }) {
 }
 
 // ---------- COMPOSE MODAL ----------
-function ComposeModal({ onPost, onClose }) {
+function ComposeModal({ onPost, onClose, onMinimize, hidden }) {
   const [title, setTitle] = React.useState('');
   const [desc, setDesc] = React.useState('');
   const [format, setFormat] = React.useState('written');
@@ -145,11 +145,11 @@ function ComposeModal({ onPost, onClose }) {
   };
 
   return (
-    <div className="fm-backdrop">
+    <div className={'fm-backdrop' + (hidden ? ' is-hidden' : '')}>
       <div className="fm-modal fm-win">
         <div className="fm-titlebar">
           <span className="fm-tb-title"><Hug size={15} /> Post a new topic</span>
-          <WinButtons variant="popup" onClose={onClose} />
+          <WinButtons variant="popup" onMinimize={onMinimize} onClose={onClose} />
         </div>
         <div className="fm-modal-body">
           <div className="fm-compose-fields">

@@ -31,6 +31,7 @@ function App() {
   const [minChats, setMinChats] = useState([]); // minimized chat conv ids
   const [reqTab, setReqTab] = useState('incoming');
   const [composeOpen, setComposeOpen] = useState(false);
+  const [composeMin, setComposeMin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileUser, setProfileUser] = useState(null);
   const menuRef = useRef(null);
@@ -268,7 +269,7 @@ function App() {
       </div>
 
       {/* post a new topic modal */}
-      {composeOpen && <ComposeModal onPost={onPost} onClose={() => setComposeOpen(false)} />}
+      {composeOpen && <ComposeModal onPost={onPost} hidden={composeMin} onMinimize={() => setComposeMin(true)} onClose={() => { setComposeOpen(false); setComposeMin(false); }} />}
 
       {/* a user's profile (opened by tapping their name) */}
       {profileUser && <UserProfileModal name={profileUser} topics={s.topics} requests={s.requests}
@@ -287,8 +288,14 @@ function App() {
         onMinimize={() => setReachMin(true)} onClose={() => { setReachTopic(null); setReachMin(false); }} onSend={onSendRequest} />}
 
       {/* dock for minimized popups (bottom-right) */}
-      {(minChats.filter((id) => openChatIds.includes(id)).length > 0 || (reachTopic && reachMin)) && (
+      {(minChats.filter((id) => openChatIds.includes(id)).length > 0 || (reachTopic && reachMin) || (composeOpen && composeMin)) && (
         <div className="fm-dock">
+          {composeOpen && composeMin && (
+            <div className="fm-dock-chip" onClick={() => setComposeMin(false)}>
+              <span>✎ New topic</span>
+              <button className="fm-dock-x" onPointerDown={(e) => { e.stopPropagation(); setComposeOpen(false); setComposeMin(false); }}>{'×'}</button>
+            </div>
+          )}
           {reachTopic && reachMin && (
             <div className="fm-dock-chip" onClick={() => setReachMin(false)}>
               <Hug size={14} /><span className="ellip">Reach out: {reachTopic.name}</span>
