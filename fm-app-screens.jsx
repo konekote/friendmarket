@@ -132,7 +132,7 @@ function MeBar({ account, onSetStatus, onSetPresence }) {
 }
 
 // ---------- COMPOSE MODAL ----------
-function ComposeModal({ onPost, onClose, onMinimize, hidden }) {
+function ComposeModal({ onPost, onClose, hidden, onMinimize }) {
   const [title, setTitle] = React.useState('');
   const [desc, setDesc] = React.useState('');
   const [format, setFormat] = React.useState('written');
@@ -553,7 +553,7 @@ function Stat({ n, label }) {
 }
 
 // ---------- USER PROFILE (someone else's) ----------
-function UserProfileModal({ name, topics, requests, conversations, account, requestedTitles, onReach, onClose, onMinimize, hidden }) {
+function UserProfileModal({ name, topics, requests, conversations, account, requestedTitles, onReach, onClose, hidden, onMinimize }) {
   // gather what we know about this person from the seed data
   const theirTopics = topics.filter((t) => t.name === name && !t.mine);
   const fromTopic = topics.find((t) => t.name === name);

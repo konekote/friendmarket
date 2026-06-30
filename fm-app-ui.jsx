@@ -30,10 +30,11 @@ function Badge({ format }) {
 // variant: 'main' (all dead) | 'popup' (minimize + close live, maximize dead)
 function WinButtons({ variant, onMinimize, onClose }) {
   const main = variant === 'main';
+  const minDead = main || !onMinimize;
   return (
     <span className="fm-tb-dots">
-      <button className={'tb-min' + (main ? ' dead' : '')} title={main ? '' : 'Minimize'} tabIndex={-1}
-        onClick={main ? undefined : onMinimize}>_</button>
+      <button className={'tb-min' + (minDead ? ' dead' : '')} title={minDead ? '' : 'Minimize'} tabIndex={-1}
+        onClick={minDead ? undefined : onMinimize}>_</button>
       <button className="tb-max dead" title="" tabIndex={-1}>{'\u25A1'}</button>
       <button className={'tb-close' + (main ? ' dead' : '')} title={main ? '' : 'Close'} tabIndex={-1}
         onClick={main ? undefined : onClose}>{'\u00D7'}</button>
@@ -44,7 +45,7 @@ function WinButtons({ variant, onMinimize, onClose }) {
 const FM_PRES_LABEL = { online: 'Online', away: 'Away', offline: 'Invisible' };
 
 function ThemeToggle({ theme, resolvedDark, onCycle, inNav }) {
-  const glyph = resolvedDark ? '\u263E' : '\u2600'; // moon / sun
+  const glyph = theme === 'auto' ? '\u25D1' : (resolvedDark ? '\u263E' : '\u2600'); // half-disc (auto) / moon / sun
   const label = theme === 'auto' ? 'Auto' : (theme === 'dark' ? 'Dark' : 'Light');
   const title = 'Theme: ' + label + (theme === 'auto' ? ' (following system)' : '') + ' — click to change';
   return (

@@ -318,10 +318,10 @@
 .fm-theme-toggle { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font); font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; border: 1px solid transparent; background: transparent; border-radius: 9px; padding: 7px 12px; }
 .fm-theme-toggle:hover { background: rgba(19,145,216,.08); color: var(--ink); }
 .fm-theme-toggle .ic { font-size: 15px; line-height: 1; }
-.fm-theme-toggle.in-nav { margin-left: 2px; }
+.fm-theme-toggle.in-nav { margin-left: 2px; justify-content: center; min-width: 96px; }
 .fm-theme-toggle.floating { position: absolute; top: 16px; right: 16px; z-index: 70; background: rgba(255,255,255,.7); border-color: var(--line); box-shadow: 0 2px 8px rgba(20,70,110,.12); }
 .fm-theme-toggle.floating:hover { background: #fff; }
-@media (max-width: 640px) { .fm-theme-toggle .lbl { display: none; } }
+@media (max-width: 640px) { .fm-theme-toggle.floating .lbl { display: none; } }
 
 /* presence dropdown (me bar) */
 .fm-presdd { position: relative; flex: 0 0 auto; }
@@ -529,7 +529,7 @@
   }
   .fm-app-win { width: 100vw; height: 100dvh; height: 100vh; border-radius: 0; border: none; }
   /* keep the tagline, but let it sit centered under the wordmark */
-  .fm-brand { flex-wrap: wrap; justify-content: center; }
+  .fm-brand { flex-wrap: wrap; }
   .fm-tagline { flex-basis: 100%; margin-top: -2px; text-align: center; }
   /* header: brand on the left, hamburger menu on the right */
   .fm-header { padding: 10px 14px; gap: 9px; }
