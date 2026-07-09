@@ -366,7 +366,7 @@ function ReachOutModal({ topic, hidden, onMinimize, onClose, onSend }) {
 
           <label className="fm-field-label">Your message</label>
           <textarea className="fm-textarea" rows={3} autoFocus value={msg}
-            placeholder={'Hi ' + topic.name + '! I'd love to talk about this because…'}
+            placeholder={"Hi " + topic.name + "! I'd love to talk about this because…"}
             onChange={(e) => setMsg(e.target.value)} />
 
           <label className="fm-field-label" style={{ marginTop: 14 }}>I also want to talk about… <span className="opt">(optional)</span></label>

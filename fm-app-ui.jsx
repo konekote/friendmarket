@@ -166,7 +166,7 @@ function ChatWindow({ conv, myName, index, minimized, onMinimize, onClose, onSen
 
       {conv.outcome ? (
         <div className={'fm-ribbon fm-ribbon--' + (conv.outcome === 'success' ? 'success' : 'no')}>
-          {conv.outcome === 'success' ? '\u2714 Marked a successful connection!' : '— Marked: didn't work out'}
+          {conv.outcome === 'success' ? '\u2714 Marked a successful connection!' : "— Marked: didn't work out"}
         </div>
       ) : (
         <React.Fragment>
