@@ -44,15 +44,27 @@ function WinButtons({ variant, onMinimize, onClose }) {
 
 const FM_PRES_LABEL = { online: 'Online', away: 'Away', offline: 'Invisible' };
 
-function ThemeToggle({ theme, resolvedDark, onCycle, inNav }) {
-  const glyph = theme === 'auto' ? '◑' : (resolvedDark ? '☾' : '☀');
-  const label = theme === 'auto' ? 'Auto' : (theme === 'dark' ? 'Dark' : 'Light');
-  const title = 'Theme: ' + label + (theme === 'auto' ? ' (following system)' : '') + ' — click to change';
+const FM_THEME_OPTS = [
+  { key: 'light', glyph: '☀', label: 'Light' },
+  { key: 'dark', glyph: '☾', label: 'Dark' },
+  { key: 'auto', glyph: '◑', label: 'Auto' },
+];
+// segmented control — three explicit settings, current one highlighted (not a cycling button)
+function ThemeToggle({ theme, onChange, inNav }) {
   return (
-    <button className={'fm-theme-toggle' + (inNav ? ' in-nav' : ' floating')} onClick={onCycle} title={title} aria-label={title}>
-      <span className="ic">{glyph}</span>
-      <span className="lbl">{label}</span>
-    </button>
+    <div className={'fm-theme-seg' + (inNav ? ' in-nav' : ' floating')} role="radiogroup" aria-label="Theme">
+      {FM_THEME_OPTS.map((o) => {
+        const on = theme === o.key;
+        const title = o.label + (o.key === 'auto' ? ' (follows system)' : '');
+        return (
+          <button key={o.key} className={on ? 'is-on' : ''} onClick={() => onChange(o.key)}
+            role="radio" aria-checked={on} title={title} aria-label={title}>
+            <span className="ic">{o.glyph}</span>
+            <span className="lbl">{o.label}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }
 

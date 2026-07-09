@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
 <title>FriendMarket</title>
+<link rel="stylesheet" href="tokens.css" />
 <link rel="stylesheet" href="fm-app.css" />
 <style>
   html, body { margin: 0; height: 100%; background: #bfe6ff; }
@@ -62,7 +63,6 @@ function App() {
   }, []);
   useEffect(() => { localStorage.setItem('friendmarket:theme', theme); }, [theme]);
   const resolvedDark = theme === 'dark' || (theme === 'auto' && systemDark);
-  const cycleTheme = () => setTheme((t) => t === 'light' ? 'dark' : t === 'dark' ? 'auto' : 'light');
 
   useEffect(() => { window.fmSave(s); }, [s]);
 
@@ -92,6 +92,12 @@ function App() {
 
   // ---- auth ----
   const onAuth = (acct) => { setS((p) => ({ ...p, account: acct, view: 'browse' })); };
+  const onLogout = async () => {
+    await window.FM_SB.auth.signOut();
+    setToasts([]); setMinChats([]); setReachTopic(null); setReachMin(false);
+    setComposeOpen(false); setComposeMin(false); setProfileUser(null); setProfileMin(false); setDockOrder([]);
+    setS((p) => ({ ...p, account: null, view: 'browse' }));
+  };
 
   // restore session on load + listen for sign-out
   useEffect(() => {
@@ -235,7 +241,7 @@ function App() {
   if (!s.account) {
     return (
       <div className="fmw fm-desktop" data-theme={resolvedDark ? 'dark' : 'light'}>
-        <ThemeToggle theme={theme} resolvedDark={resolvedDark} onCycle={cycleTheme} />
+        <ThemeToggle theme={theme} onChange={setTheme} />
         <AuthScreen onAuth={onAuth} />
         <button className="fm-reset" onClick={() => { localStorage.removeItem(window.FM_STORE_KEY); location.reload(); }}>reset demo</button>
       </div>
@@ -290,7 +296,7 @@ function App() {
 
         {s.view === 'browse' && <BrowseScreen topics={s.topics} recentMine={recentMine} onReach={(t) => { setReachTopic(t); setReachMin(false); }} requestedTitles={requestedTitles} />}
         {s.view === 'requests' && <ChatsScreen requests={s.requests} conversations={s.conversations} tab={reqTab} setTab={setReqTab} onAccept={onAccept} onDelete={onDelete} onOpenChat={(id) => { onOpenChat(id); }} />}
-        {s.view === 'profile' && <ProfileScreen account={s.account} topics={s.topics} conversations={s.conversations} onReach={(t) => { setReachTopic(t); setReachMin(false); }} theme={theme} resolvedDark={resolvedDark} onCycleTheme={cycleTheme} />}
+        {s.view === 'profile' && <ProfileScreen account={s.account} topics={s.topics} conversations={s.conversations} onReach={(t) => { setReachTopic(t); setReachMin(false); }} theme={theme} onSetTheme={setTheme} onLogout={onLogout} />}
       </div>
 
       {/* post a new topic modal */}

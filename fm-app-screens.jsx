@@ -537,7 +537,7 @@ function ChatsScreen({ requests, conversations, tab, setTab, onAccept, onDelete,
 }
 
 // ---------- PROFILE ----------
-function ProfileScreen({ account, topics, conversations, onReach, theme, resolvedDark, onCycleTheme }) {
+function ProfileScreen({ account, topics, conversations, onReach, theme, onSetTheme, onLogout }) {
   const mine = topics.filter((t) => t.mine);
   const convs = Object.values(conversations);
   const success = convs.filter((c) => c.outcome === 'success').length;
@@ -556,7 +556,7 @@ function ProfileScreen({ account, topics, conversations, onReach, theme, resolve
                 </div>
               </div>
             </div>
-            <div className="fm-req-foot" style={{ gap: 18 }}>
+            <div className="fm-up-stats">
               <Stat n={mine.length} label="topics posted" />
               <Stat n={convs.length} label="conversations" />
               <Stat n={success} label="successful" />
@@ -570,7 +570,17 @@ function ProfileScreen({ account, topics, conversations, onReach, theme, resolve
               <div className="fm-appearance-title">Light / dark mode</div>
               <div className="fm-appearance-sub">Choose Light, Dark, or Auto (follows your system).</div>
             </div>
-            <ThemeToggle theme={theme} resolvedDark={resolvedDark} onCycle={onCycleTheme} inNav />
+            <ThemeToggle theme={theme} onChange={onSetTheme} inNav />
+          </div>
+        </div>
+        <div className="fm-section"><h3>Account</h3></div>
+        <div className="fm-section">
+          <div className="fm-appearance">
+            <div>
+              <div className="fm-appearance-title">Log out</div>
+              <div className="fm-appearance-sub">Sign out of FriendMarket on this device.</div>
+            </div>
+            <button className="fm-btn fm-btn--danger" onClick={onLogout}>Log out</button>
           </div>
         </div>
         <div className="fm-section"><h3>Your topics</h3></div>
