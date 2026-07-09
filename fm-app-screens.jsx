@@ -1,6 +1,32 @@
 // FriendMarket prototype — screens.
 
 // ---------- AUTH ----------
+const FM_PW_RULES = [
+  { label: ‘At least 8 characters’,         test: (p) => p.length >= 8 },
+  { label: ‘At least one uppercase letter’,  test: (p) => /[A-Z]/.test(p) },
+  { label: ‘At least one lowercase letter’,  test: (p) => /[a-z]/.test(p) },
+  { label: ‘At least one number’,            test: (p) => /[0-9]/.test(p) },
+  { label: ‘At least one special character’, test: (p) => /[^A-Za-z0-9]/.test(p) },
+];
+
+function PasswordRules({ password }) {
+  if (!password) return null;
+  return (
+    <ul style={{ margin: ‘6px 0 0’, padding: 0, listStyle: ‘none’, display: ‘flex’, flexDirection: ‘column’, gap: 3 }}>
+      {FM_PW_RULES.map((r) => {
+        const ok = r.test(password);
+        return (
+          <li key={r.label} style={{ display: ‘flex’, alignItems: ‘center’, gap: 6, fontSize: 12,
+            color: ok ? ‘var(--accent-2)’ : ‘var(--muted)’ }}>
+            <span style={{ fontSize: 10, lineHeight: 1 }}>{ok ? ‘✔’ : ‘○’}</span>
+            {r.label}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 function AuthScreen({ onAuth }) {
   const [mode, setMode] = React.useState(‘register’);
   const [step, setStep] = React.useState(‘form’); // ‘form’ | ‘check-email’
@@ -9,6 +35,8 @@ function AuthScreen({ onAuth }) {
   const [password, setPassword] = React.useState(‘’);
   const [err, setErr] = React.useState(‘’);
   const [loading, setLoading] = React.useState(false);
+
+  const pwValid = FM_PW_RULES.every((r) => r.test(password));
 
   const submitForm = async (e) => {
     e.preventDefault();
@@ -31,7 +59,7 @@ function AuthScreen({ onAuth }) {
     if (!u) { setErr(‘Pick a username.’); return; }
     if (/\s/.test(u)) { setErr(‘No spaces — use letters, numbers or _’); return; }
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { setErr(‘Enter a valid email address.’); return; }
-    if (password.length < 6) { setErr(‘Password must be at least 6 characters.’); return; }
+    if (!pwValid) { setErr(‘Please meet all password requirements.’); return; }
 
     setLoading(true);
     const { error } = await window.FM_SB.auth.signUp({
@@ -95,8 +123,9 @@ function AuthScreen({ onAuth }) {
               </div>
               <div>
                 <label>Password</label>
-                <input className="fm-input" type="password" value={password} placeholder={mode === ‘register’ ? ‘at least 6 characters’ : ‘your password’}
+                <input className="fm-input" type="password" value={password} placeholder={mode === ‘register’ ? ‘create a password’ : ‘your password’}
                   onChange={(e) => { setPassword(e.target.value); setErr(‘’); }} />
+                {mode === ‘register’ && <PasswordRules password={password} />}
               </div>
               {err && <p className="fm-err">{err}</p>}
               <button className="fm-btn fm-btn--primary" type="submit" disabled={loading} style={{ marginTop: 4 }}>
