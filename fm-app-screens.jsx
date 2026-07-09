@@ -240,7 +240,7 @@ function TopicRow({ topic, onReach, requested }) {
       <span className="fm-time">{window.fmTimeLabel(topic.ts)}</span>
       {!mine && (
         requested
-          ? <span className="fm-cta fm-status-pill fm-status-pill--accepted">{'\u2714'} requested</span>
+          ? <span className="fm-cta fm-status-pill fm-status-pill--accepted">{'✔'} requested</span>
           : <button className="fm-btn fm-btn--primary fm-cta" onClick={() => onReach(topic)}>Let's talk!</button>
       )}
     </article>
@@ -260,11 +260,11 @@ function Pager({ page, pages, onPage }) {
   }
   return (
     <div className="fm-pager">
-      <button className="nav" disabled={page === 1} onClick={() => onPage(page - 1)}>{'\u2039'} Prev</button>
+      <button className="nav" disabled={page === 1} onClick={() => onPage(page - 1)}>{'‹'} Prev</button>
       {nums.map((n, i) => n === '…'
         ? <span key={'e' + i} className="gap">…</span>
         : <button key={n} className={n === page ? 'is-on' : ''} onClick={() => onPage(n)}>{n}</button>)}
-      <button className="nav" disabled={page === pages} onClick={() => onPage(page + 1)}>Next {'\u203A'}</button>
+      <button className="nav" disabled={page === pages} onClick={() => onPage(page + 1)}>Next {'›'}</button>
     </div>
   );
 }
@@ -315,11 +315,11 @@ function BrowseScreen({ topics, recentMine, onReach, requestedTitles }) {
       <div className="fm-scroll">
         <div className="fm-toolbar">
           <div className="fm-search">
-            <span className="ic">{'\uD83D\uDD0D'}</span>
+            <span className="ic">{'🔍'}</span>
             <input value={q} placeholder="Search topics, people, anything…" onChange={(e) => setQ(e.target.value)} />
           </div>
           <button className={'fm-filter-toggle' + (filtered ? ' has-filters' : '')} onClick={() => setShowFilters((f) => !f)} aria-expanded={showFilters}>
-            <span className="ic">{'\u2261'}</span> Filters{filtered && <span className="dot"></span>}
+            <span className="ic">{'≡'}</span> Filters{filtered && <span className="dot"></span>}
           </button>
           <div className={'fm-filters' + (showFilters ? ' is-open' : '')}>
             <select className="fm-native" value={cat} onChange={(e) => setCat(e.target.value)}>
@@ -440,10 +440,10 @@ function SentCard({ req, onOpenChat }) {
         <div className="fm-req-foot">
           <Badge format={req.format} />
           <span className="spacer"></span>
-          {req.status === 'pending' && <span className="fm-status-pill fm-status-pill--pending">{'\u25CB'} waiting for reply</span>}
+          {req.status === 'pending' && <span className="fm-status-pill fm-status-pill--pending">{'○'} waiting for reply</span>}
           {req.status === 'accepted' && req.convId && (
             <React.Fragment>
-              <span className="fm-status-pill fm-status-pill--accepted">{'\u2714'} accepted</span>
+              <span className="fm-status-pill fm-status-pill--accepted">{'✔'} accepted</span>
               <button className="fm-btn fm-btn--primary fm-btn--sm" onClick={() => onOpenChat(req.convId)}>Open chat</button>
             </React.Fragment>
           )}
@@ -464,7 +464,7 @@ function ChatCard({ c, onOpenChat, past }) {
           <IDot presence={c.presence} />
           <UserName name={c.name} />
           {unread && <span className="fm-unread-badge">{c.unread} new {c.unread === 1 ? 'reply' : 'replies'}</span>}
-          {c.outcome === 'success' && <span className="fm-status-pill fm-status-pill--accepted">{'\u2714'} connected</span>}
+          {c.outcome === 'success' && <span className="fm-status-pill fm-status-pill--accepted">{'✔'} connected</span>}
           {c.outcome === 'no' && <span className="fm-status-pill fm-status-pill--declined">didn't work out</span>}
         </div>
         <h3 className="fm-title">{c.topicTitle}</h3>
@@ -606,7 +606,7 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
     <div className={'fm-backdrop' + (hidden ? ' is-hidden' : '')} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="fm-modal fm-win fm-userprofile">
         <div className="fm-titlebar">
-          <span className="fm-tb-title"><Hug size={15} /> {isMe ? 'Your profile' : name + '\u2019s profile'}</span>
+          <span className="fm-tb-title"><Hug size={15} /> {isMe ? 'Your profile' : name + '’s profile'}</span>
           <WinButtons variant="popup" onMinimize={onMinimize} onClose={onClose} />
         </div>
         <div className="fm-modal-body">
@@ -617,7 +617,7 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
                 <IDot presence={presence} />
                 <span className="fm-name" style={{ color: window.fmColorFor(name), fontSize: 'var(--fs-h2)' }}>{name}</span>
               </div>
-              <div className="fm-up-status">{status ? '\u201C' + status + '\u201D' : 'no status yet'}</div>
+              <div className="fm-up-status">{status ? '“' + status + '”' : 'no status yet'}</div>
             </div>
           </div>
           <div className="fm-up-stats">

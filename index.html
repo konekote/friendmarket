@@ -51,7 +51,7 @@ function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('friendmarket:theme') || 'auto');
   const toastTimers = useRef({});
 
-  // resolve theme (auto follows system) → data-theme on root
+  // resolve theme (auto follows system) -> data-theme on root
   const [systemDark, setSystemDark] = useState(() => window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
   useEffect(() => {
     if (!window.matchMedia) return;
@@ -120,7 +120,7 @@ function App() {
     }));
     setRecentMine((m) => [id, ...m]);
     patch((p) => ({ ...p, view: 'browse' }));
-    addToast('\uD83D\uDCEC', 'Your topic is live \u2014 it\u2019s at the top of Browse.');
+    addToast('📬', "Your topic is live — it’s at the top of Browse.");
   };
 
   // ---- reach out ----
@@ -135,7 +135,7 @@ function App() {
       topics: p.topics.map((t) => t.id === topic.id ? { ...t, replies: (t.replies || 0) + 1 } : t),
       requests: [{ id: reqId, dir: 'outgoing', name: topic.name, presence: topic.presence, topicTitle: topic.title, category: topic.category, format: topic.format, message, also, status: 'pending' }, ...p.requests],
     }));
-    addToast('\u2197\uFE0F', 'Request sent to ' + topic.name + '. Hang tight!');
+    addToast('↗️', 'Request sent to ' + topic.name + '. Hang tight!');
     // simulate them accepting
     setTimeout(() => {
       const convId = window.fmUid();
@@ -152,7 +152,7 @@ function App() {
           openChats: openChat(p, convId),
         };
       });
-      addToast('\uD83E\uDEC2', topic.name + ' accepted your request! Say hi.');
+      addToast('🫂', topic.name + ' accepted your request! Say hi.');
     }, 2600);
   };
 
@@ -174,12 +174,12 @@ function App() {
       };
     });
     setReqTab('active');
-    addToast('\uD83E\uDEC2', 'Chat opened — it's in your Active chats.');
+    addToast('🫂', "Chat opened — it's in your Active chats.");
   };
   // deleting removes it for both people (here: gone from the list entirely)
   const onDelete = (reqId) => {
     patch((p) => ({ ...p, requests: p.requests.filter((r) => r.id !== reqId) }));
-    addToast('\uD83D\uDDD1\uFE0F', 'Request deleted for both of you.');
+    addToast('🗑️', 'Request deleted for both of you.');
   };
 
   // ---- chat windows ----
@@ -215,9 +215,9 @@ function App() {
     patch((p) => {
       const c = p.conversations[convId];
       if (!c) return p;
-      return { ...p, conversations: { ...p.conversations, [convId]: { ...c, outcome, messages: [...c.messages, { from: 'sys', text: outcome === 'success' ? 'You marked this a successful connection.' : 'You marked this: didn\u2019t work out.' }] } } };
+      return { ...p, conversations: { ...p.conversations, [convId]: { ...c, outcome, messages: [...c.messages, { from: 'sys', text: outcome === 'success' ? 'You marked this a successful connection.' : "You marked this: didn’t work out." }] } } };
     });
-    addToast(outcome === 'success' ? '\u2714\uFE0F' : '\uD83D\uDC4B', outcome === 'success' ? 'Nice \u2014 marked as a successful connection!' : 'Marked. Onward to the next one!');
+    addToast(outcome === 'success' ? '✔️' : '👋', outcome === 'success' ? 'Nice — marked as a successful connection!' : 'Marked. Onward to the next one!');
   };
 
   // navigate between views; clears your just-posted topics from Browse
@@ -270,7 +270,7 @@ function App() {
           </nav>
           <div className="fm-menu" ref={menuRef}>
             <button className="fm-menu-btn" onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" aria-expanded={menuOpen}>
-              <span className="fm-menu-ic">{'\u2630'}</span>
+              <span className="fm-menu-ic">{'☰'}</span>
               {pendingIncoming > 0 && <span className="fm-count fm-menu-count">{pendingIncoming}</span>}
             </button>
             {menuOpen && (
@@ -281,7 +281,7 @@ function App() {
                 </button>
                 <button className={s.view === 'profile' ? 'is-active' : ''} onClick={() => goView('profile')}>My Account</button>
                 <div className="fm-menu-sep"></div>
-                <button className="fm-menu-post" onClick={() => { setComposeOpen(true); setMenuOpen(false); }}>{'\u002B'} Post a new topic</button>
+                <button className="fm-menu-post" onClick={() => { setComposeOpen(true); setMenuOpen(false); }}>{'+'} Post a new topic</button>
               </div>
             )}
           </div>
@@ -314,26 +314,26 @@ function App() {
       {reachTopic && <ReachOutModal topic={reachTopic} hidden={reachMin}
         onMinimize={() => { setReachMin(true); dockAdd('reach'); }} onClose={() => { setReachTopic(null); setReachMin(false); dockRemove('reach'); }} onSend={onSendRequest} />}
 
-      {/* dock for minimized popups (bottom-right) — oldest at the bottom */}
+      {/* dock for minimized popups (bottom-right) - oldest at the bottom */}
       {dockOrder.length > 0 && (
         <div className="fm-dock">
           {dockOrder.map((key) => {
             if (key === 'compose' && composeOpen && composeMin) return (
               <div key="compose" className="fm-dock-chip" onClick={() => { setComposeMin(false); dockRemove('compose'); }}>
                 <Hug size={14} /><span className="ellip">Post a new topic</span>
-                <button className="x" onClick={(e) => { e.stopPropagation(); setComposeOpen(false); setComposeMin(false); dockRemove('compose'); }}>{'\u00D7'}</button>
+                <button className="x" onClick={(e) => { e.stopPropagation(); setComposeOpen(false); setComposeMin(false); dockRemove('compose'); }}>{'×'}</button>
               </div>
             );
             if (key === 'profile' && profileUser && profileMin) return (
               <div key="profile" className="fm-dock-chip" onClick={() => { setProfileMin(false); dockRemove('profile'); }}>
-                <Hug size={14} /><span className="ellip">{profileUser}{'\u2019'}s profile</span>
-                <button className="x" onClick={(e) => { e.stopPropagation(); setProfileUser(null); setProfileMin(false); dockRemove('profile'); }}>{'\u00D7'}</button>
+                <Hug size={14} /><span className="ellip">{profileUser}{'’'}s profile</span>
+                <button className="x" onClick={(e) => { e.stopPropagation(); setProfileUser(null); setProfileMin(false); dockRemove('profile'); }}>{'×'}</button>
               </div>
             );
             if (key === 'reach' && reachTopic && reachMin) return (
               <div key="reach" className="fm-dock-chip" onClick={() => { setReachMin(false); dockRemove('reach'); }}>
                 <Hug size={14} /><span className="ellip">Reach out: {reachTopic.name}</span>
-                <button className="x" onClick={(e) => { e.stopPropagation(); setReachTopic(null); setReachMin(false); dockRemove('reach'); }}>{'\u00D7'}</button>
+                <button className="x" onClick={(e) => { e.stopPropagation(); setReachTopic(null); setReachMin(false); dockRemove('reach'); }}>{'×'}</button>
               </div>
             );
             if (key.startsWith('chat:')) {
@@ -343,7 +343,7 @@ function App() {
                 <div key={key} className="fm-dock-chip" onClick={() => onRestoreChat(id)}>
                   <span className={'fm-dot fm-dot--' + s.conversations[id].presence}></span>
                   <span className="ellip">{s.conversations[id].name}</span>
-                  <button className="x" onClick={(e) => { e.stopPropagation(); onCloseChat(id); }}>{'\u00D7'}</button>
+                  <button className="x" onClick={(e) => { e.stopPropagation(); onCloseChat(id); }}>{'×'}</button>
                 </div>
               );
             }

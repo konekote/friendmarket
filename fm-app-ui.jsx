@@ -1,7 +1,7 @@
 // FriendMarket prototype — small UI atoms + the floating ChatWindow.
 
 function Hug({ size }) {
-  return <span className="fm-hug" style={size ? { fontSize: size } : undefined}>{'\uD83E\uDEC2'}</span>;
+  return <span className="fm-hug" style={size ? { fontSize: size } : undefined}>{'🫂'}</span>;
 }
 
 function HugAva({ className }) {
@@ -35,9 +35,9 @@ function WinButtons({ variant, onMinimize, onClose }) {
     <span className="fm-tb-dots">
       <button className={'tb-min' + (minDead ? ' dead' : '')} title={minDead ? '' : 'Minimize'} tabIndex={-1}
         onClick={minDead ? undefined : onMinimize}>_</button>
-      <button className="tb-max dead" title="" tabIndex={-1}>{'\u25A1'}</button>
+      <button className="tb-max dead" title="" tabIndex={-1}>{'□'}</button>
       <button className={'tb-close' + (main ? ' dead' : '')} title={main ? '' : 'Close'} tabIndex={-1}
-        onClick={main ? undefined : onClose}>{'\u00D7'}</button>
+        onClick={main ? undefined : onClose}>{'×'}</button>
     </span>
   );
 }
@@ -45,7 +45,7 @@ function WinButtons({ variant, onMinimize, onClose }) {
 const FM_PRES_LABEL = { online: 'Online', away: 'Away', offline: 'Invisible' };
 
 function ThemeToggle({ theme, resolvedDark, onCycle, inNav }) {
-  const glyph = theme === 'auto' ? '\u25D1' : (resolvedDark ? '\u263E' : '\u2600'); // half-disc (auto) / moon / sun
+  const glyph = theme === 'auto' ? '◑' : (resolvedDark ? '☾' : '☀');
   const label = theme === 'auto' ? 'Auto' : (theme === 'dark' ? 'Dark' : 'Light');
   const title = 'Theme: ' + label + (theme === 'auto' ? ' (following system)' : '') + ' — click to change';
   return (
@@ -68,7 +68,7 @@ function PresenceDropdown({ presence, onChange }) {
     <div className="fm-presdd" ref={ref}>
       <button className="fm-presdd-btn" onClick={() => setOpen((o) => !o)} title={FM_PRES_LABEL[presence]} aria-label={'Presence: ' + FM_PRES_LABEL[presence]}>
         <span className={'fm-dot fm-dot--' + presence}></span>
-        <span className="caret">{'\u25BE'}</span>
+        <span className="caret">{'▾'}</span>
       </button>
       {open && (
         <div className="fm-presdd-menu">
@@ -160,13 +160,13 @@ function ChatWindow({ conv, myName, index, minimized, onMinimize, onClose, onSen
         ))}
       </div>
       <div className="fm-chat-note">
-        <span>{'\u2139'}</span>
+        <span>{'ℹ'}</span>
         <span>FriendMarket doesn't host calls — swap Skype / Discord here when you're both ready.</span>
       </div>
 
       {conv.outcome ? (
         <div className={'fm-ribbon fm-ribbon--' + (conv.outcome === 'success' ? 'success' : 'no')}>
-          {conv.outcome === 'success' ? '\u2714 Marked a successful connection!' : "— Marked: didn't work out"}
+          {conv.outcome === 'success' ? '✔ Marked a successful connection!' : "— Marked: didn't work out"}
         </div>
       ) : (
         <React.Fragment>
@@ -179,11 +179,11 @@ function ChatWindow({ conv, myName, index, minimized, onMinimize, onClose, onSen
           <div className="fm-chat-bar">
             <span className="spacer"></span>
             <button className="fm-btn fm-btn--ghost fm-btn--sm" onClick={() => setMarkOpen((o) => !o)}>
-              Mark interaction {'\u25BE'}
+              Mark interaction {'▾'}
             </button>
             {markOpen && (
               <div className="fm-mark-menu">
-                <button onClick={() => { setMarkOpen(false); onMark(conv.id, 'success'); }}><span>{'\u2714'}</span> Successful connection</button>
+                <button onClick={() => { setMarkOpen(false); onMark(conv.id, 'success'); }}><span>{'✔'}</span> Successful connection</button>
                 <button onClick={() => { setMarkOpen(false); onMark(conv.id, 'no'); }}><span>{'—'}</span> Didn't work out</button>
               </div>
             )}

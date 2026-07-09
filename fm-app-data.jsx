@@ -1,9 +1,9 @@
 // FriendMarket prototype — seed data, helpers, persistence.
 
 window.FM_FMT = {
-  written: { glyph: '\u270e', label: 'Written' },
-  audio: { glyph: '\u266a', label: 'Audio' },
-  video: { glyph: '\u25b6', label: 'Video' },
+  written: { glyph: '✎', label: 'Written' },
+  audio:   { glyph: '♪', label: 'Audio' },
+  video:   { glyph: '▶', label: 'Video' },
 };
 
 window.FM_CATEGORIES = ['Music', 'Movies & TV', 'Gaming', 'Animals', 'Books', 'Technology', 'Food', 'Art', 'Languages', 'Lifestyle'];
@@ -65,7 +65,7 @@ window.fmSeed = function () {
       messages: [
         { from: 'blue_swirl', text: 'heyy thanks for accepting! so. the Dreamcast.', mine: false },
         { from: 'blue_swirl', text: 'underrated or MOST underrated, no in between', mine: false },
-        { from: 'me', text: 'lol ok i\u2019m listening. sell me on the VMU', mine: true },
+        { from: 'me', text: "lol ok i'm listening. sell me on the VMU", mine: true },
       ],
     },
     cva: { id: 'cva', name: 'midori_tron', presence: 'away', topicTitle: 'Practicing conversational Japanese', outcome: null, unread: 2, messages: [
@@ -84,20 +84,20 @@ window.fmSeed = function () {
     account: null, // { username, email, presence, status }
     view: 'browse',
     topics: [
-      { id: 'tp1', name: 'skin_collector99', presence: 'online', status: 'llama whippin\u2019 again', title: 'The golden age of Winamp skins', desc: 'I miss customizing everything down to the EQ sliders. Swap favorites and talk skinning culture?', format: 'written', category: 'Technology', replies: 3, ts: daysBack(0), mine: false },
-      { id: 'tp2', name: 'midori_tron', presence: 'away', status: '\u9811\u5f35\u3063\u3066\u307e\u3059 \u00b7 trying my best', title: 'Practicing conversational Japanese', desc: 'Hovering around N4. Looking for relaxed, slow chats \u2014 no pressure, lots of patience.', format: 'audio', category: 'Languages', replies: 1, ts: daysBack(0), mine: false },
-      { id: 'tp3', name: 'blue_swirl', presence: 'online', status: 'defending the VMU 4 life', title: 'Is the Dreamcast underrated?', desc: 'Hot takes welcome. I\u2019ll go first: it was a full decade ahead of its time. Change my mind.', format: 'video', category: 'Gaming', replies: 5, ts: daysBack(1), mine: false },
+      { id: 'tp1', name: 'skin_collector99', presence: 'online', status: "llama whippin' again", title: 'The golden age of Winamp skins', desc: 'I miss customizing everything down to the EQ sliders. Swap favorites and talk skinning culture?', format: 'written', category: 'Technology', replies: 3, ts: daysBack(0), mine: false },
+      { id: 'tp2', name: 'midori_tron', presence: 'away', status: '頑張ってます · trying my best', title: 'Practicing conversational Japanese', desc: 'Hovering around N4. Looking for relaxed, slow chats — no pressure, lots of patience.', format: 'audio', category: 'Languages', replies: 1, ts: daysBack(0), mine: false },
+      { id: 'tp3', name: 'blue_swirl', presence: 'online', status: 'defending the VMU 4 life', title: 'Is the Dreamcast underrated?', desc: "Hot takes welcome. I'll go first: it was a full decade ahead of its time. Change my mind.", format: 'video', category: 'Gaming', replies: 5, ts: daysBack(1), mine: false },
       { id: 'tp4', name: 'fern_gully', presence: 'online', status: 'overwatering, probably', title: 'First-time houseplant panic', desc: 'My pothos is yellowing and I need a calm friend to talk me down off the ledge.', format: 'written', category: 'Lifestyle', replies: 0, ts: daysBack(2), mine: false },
-      { id: 'tp5', name: 'reverb_kid', presence: 'away', status: '\ud83c\udfa7 turned up loud', title: 'Trade dream-pop & shoegaze deep cuts', desc: 'Give me your foggiest, most reverbed recommendations and I\u2019ll give you mine.', format: 'audio', category: 'Music', replies: 2, ts: daysBack(4), mine: false },
+      { id: 'tp5', name: 'reverb_kid', presence: 'away', status: '🎧 turned up loud', title: 'Trade dream-pop & shoegaze deep cuts', desc: "Give me your foggiest, most reverbed recommendations and I'll give you mine.", format: 'audio', category: 'Music', replies: 2, ts: daysBack(4), mine: false },
       { id: 'tp6', name: 'flux_core', presence: 'online', status: 'smells like rosin', title: 'Anyone else learning to solder?', desc: 'Building a tiny synth and would love a buddy to troubleshoot with over video.', format: 'video', category: 'Technology', replies: 4, ts: daysBack(7), mine: false },
-      { id: 'tp7', name: 'paws_and_reflect', presence: 'online', status: 'three cats, zero regrets', title: 'Adopting a senior cat \u2014 worth it?', desc: 'Thinking of adopting an older rescue. Want to hear from people who have. The good and the hard parts.', format: 'written', category: 'Animals', replies: 6, ts: daysBack(3), mine: false },
+      { id: 'tp7', name: 'paws_and_reflect', presence: 'online', status: 'three cats, zero regrets', title: 'Adopting a senior cat — worth it?', desc: 'Thinking of adopting an older rescue. Want to hear from people who have. The good and the hard parts.', format: 'written', category: 'Animals', replies: 6, ts: daysBack(3), mine: false },
     ],
     requests: [
       // incoming (a few)
-      { id: 'rq1', ts: hrsBack(1), dir: 'incoming', name: 'aqua_nora', presence: 'online', senderStatus: 'patch cables everywhere, send help', topicTitle: 'Anyone else learning to solder?', category: 'Technology', format: 'video', message: 'saw your post \u2014 i\u2019m obsessed with synths too! wanna trade patch ideas while we solder sometime?', also: 'eurorack + ambient stuff', status: 'pending' },
-      { id: 'rq2', ts: hrsBack(20), dir: 'incoming', name: 'pixel_pete', presence: 'away', senderStatus: 'collecting cat gifs since 1999', topicTitle: 'First-time houseplant panic', category: 'Lifestyle', format: 'written', message: 'oh no, the pothos panic is real \u2014 i killed three before one survived. happy to talk you down off the ledge!', also: '', status: 'pending' },
-      { id: 'rq3', ts: daysBack(2), dir: 'incoming', name: 'tape_hiss', presence: 'online', senderStatus: 'side B is always better', topicTitle: 'Trade dream-pop & shoegaze deep cuts', category: 'Music', format: 'audio', message: 'i have a folder literally named \u201cfoggiest\u201d. this is my moment. let\u2019s swap.', also: 'field recordings + tape loops', status: 'pending' },
-      { id: 'rq4', ts: daysBack(5), dir: 'incoming', name: 'byte_betty', presence: 'away', senderStatus: 'GG no re', topicTitle: 'Is the Dreamcast underrated?', category: 'Gaming', format: 'video', message: 'the VMU defense starts NOW. i\u2019m ready to hear everything.', also: '', status: 'pending' },
+      { id: 'rq1', ts: hrsBack(1), dir: 'incoming', name: 'aqua_nora', presence: 'online', senderStatus: 'patch cables everywhere, send help', topicTitle: 'Anyone else learning to solder?', category: 'Technology', format: 'video', message: "saw your post — i'm obsessed with synths too! wanna trade patch ideas while we solder sometime?", also: 'eurorack + ambient stuff', status: 'pending' },
+      { id: 'rq2', ts: hrsBack(20), dir: 'incoming', name: 'pixel_pete', presence: 'away', senderStatus: 'collecting cat gifs since 1999', topicTitle: 'First-time houseplant panic', category: 'Lifestyle', format: 'written', message: 'oh no, the pothos panic is real — i killed three before one survived. happy to talk you down off the ledge!', also: '', status: 'pending' },
+      { id: 'rq3', ts: daysBack(2), dir: 'incoming', name: 'tape_hiss', presence: 'online', senderStatus: 'side B is always better', topicTitle: 'Trade dream-pop & shoegaze deep cuts', category: 'Music', format: 'audio', message: "i have a folder literally named \"foggiest\". this is my moment. let's swap.", also: 'field recordings + tape loops', status: 'pending' },
+      { id: 'rq4', ts: daysBack(5), dir: 'incoming', name: 'byte_betty', presence: 'away', senderStatus: 'GG no re', topicTitle: 'Is the Dreamcast underrated?', category: 'Gaming', format: 'video', message: "the VMU defense starts NOW. i'm ready to hear everything.", also: '', status: 'pending' },
     ],
     conversations,
     openChats: [],
@@ -110,16 +110,16 @@ window.fmSeed = function () {
   window.fmSeed = function () {
     const s = base();
     s.requests.push(
-      { id: 'sq1', ts: hrsBack(3), dir: 'outgoing', name: 'blue_swirl', presence: 'online', topicTitle: 'Is the Dreamcast underrated?', category: 'Gaming', format: 'video', message: 'ok you win, the VMU was genius. let\u2019s do a proper call?', status: 'accepted', convId: 'cv0' },
-      { id: 'sq2', ts: hrsBack(26), dir: 'outgoing', name: 'flux_core', presence: 'online', topicTitle: 'Anyone else learning to solder?', category: 'Technology', format: 'video', message: 'total beginner here but i have a fresh iron and big dreams. teach me?', status: 'pending', ts: hrsBack(26) },
-      { id: 'sq3', ts: daysBack(3), dir: 'outgoing', name: 'reverb_kid', presence: 'away', topicTitle: 'Trade dream-pop & shoegaze deep cuts', category: 'Music', format: 'audio', message: 'i will trade you my entire 2007 playlist, no take-backs.', status: 'pending', ts: daysBack(3) },
+      { id: 'sq1', ts: hrsBack(3), dir: 'outgoing', name: 'blue_swirl', presence: 'online', topicTitle: 'Is the Dreamcast underrated?', category: 'Gaming', format: 'video', message: "ok you win, the VMU was genius. let's do a proper call?", status: 'accepted', convId: 'cv0' },
+      { id: 'sq2', ts: hrsBack(26), dir: 'outgoing', name: 'flux_core', presence: 'online', topicTitle: 'Anyone else learning to solder?', category: 'Technology', format: 'video', message: 'total beginner here but i have a fresh iron and big dreams. teach me?', status: 'pending' },
+      { id: 'sq3', ts: daysBack(3), dir: 'outgoing', name: 'reverb_kid', presence: 'away', topicTitle: 'Trade dream-pop & shoegaze deep cuts', category: 'Music', format: 'audio', message: 'i will trade you my entire 2007 playlist, no take-backs.', status: 'pending' },
     );
     return s;
   };
 })();
 
 window.FM_REPLIES = [
-  'oh totally, go on', 'haha yes exactly', 'wait that\u2019s such a good point',
+  'oh totally, go on', 'haha yes exactly', "wait that's such a good point",
   'ok we should definitely take this to a call sometime', 'i could talk about this for hours tbh',
   'sending you my discord in a sec', ':)) you get it',
 ];
