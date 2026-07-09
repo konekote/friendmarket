@@ -161,12 +161,12 @@ function ChatWindow({ conv, myName, index, minimized, onMinimize, onClose, onSen
       </div>
       <div className="fm-chat-note">
         <span>{'\u2139'}</span>
-        <span>FriendMarket doesn’t host calls — swap Skype / Discord here when you’re both ready.</span>
+        <span>FriendMarket doesn't host calls — swap Skype / Discord here when you're both ready.</span>
       </div>
 
       {conv.outcome ? (
         <div className={'fm-ribbon fm-ribbon--' + (conv.outcome === 'success' ? 'success' : 'no')}>
-          {conv.outcome === 'success' ? '\u2714 Marked a successful connection!' : '— Marked: didn’t work out'}
+          {conv.outcome === 'success' ? '\u2714 Marked a successful connection!' : '— Marked: didn't work out'}
         </div>
       ) : (
         <React.Fragment>
@@ -184,7 +184,7 @@ function ChatWindow({ conv, myName, index, minimized, onMinimize, onClose, onSen
             {markOpen && (
               <div className="fm-mark-menu">
                 <button onClick={() => { setMarkOpen(false); onMark(conv.id, 'success'); }}><span>{'\u2714'}</span> Successful connection</button>
-                <button onClick={() => { setMarkOpen(false); onMark(conv.id, 'no'); }}><span>{'—'}</span> Didn’t work out</button>
+                <button onClick={() => { setMarkOpen(false); onMark(conv.id, 'no'); }}><span>{'—'}</span> Didn't work out</button>
               </div>
             )}
           </div>

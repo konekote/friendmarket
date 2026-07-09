@@ -2,23 +2,23 @@
 
 // ---------- AUTH ----------
 const FM_PW_RULES = [
-  { label: ‘At least 8 characters’,         test: (p) => p.length >= 8 },
-  { label: ‘At least one uppercase letter’,  test: (p) => /[A-Z]/.test(p) },
-  { label: ‘At least one lowercase letter’,  test: (p) => /[a-z]/.test(p) },
-  { label: ‘At least one number’,            test: (p) => /[0-9]/.test(p) },
-  { label: ‘At least one special character’, test: (p) => /[^A-Za-z0-9]/.test(p) },
+  { label: 'At least 8 characters',         test: (p) => p.length >= 8 },
+  { label: 'At least one uppercase letter',  test: (p) => /[A-Z]/.test(p) },
+  { label: 'At least one lowercase letter',  test: (p) => /[a-z]/.test(p) },
+  { label: 'At least one number',            test: (p) => /[0-9]/.test(p) },
+  { label: 'At least one special character', test: (p) => /[^A-Za-z0-9]/.test(p) },
 ];
 
 function PasswordRules({ password }) {
   if (!password) return null;
   return (
-    <ul style={{ margin: ‘6px 0 0’, padding: 0, listStyle: ‘none’, display: ‘flex’, flexDirection: ‘column’, gap: 3 }}>
+    <ul style={{ margin: '6px 0 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 3 }}>
       {FM_PW_RULES.map((r) => {
         const ok = r.test(password);
         return (
-          <li key={r.label} style={{ display: ‘flex’, alignItems: ‘center’, gap: 6, fontSize: 12,
-            color: ok ? ‘var(--accent-2)’ : ‘var(--muted)’ }}>
-            <span style={{ fontSize: 10, lineHeight: 1 }}>{ok ? ‘✔’ : ‘○’}</span>
+          <li key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12,
+            color: ok ? 'var(--accent-2)' : 'var(--muted)' }}>
+            <span style={{ fontSize: 10, lineHeight: 1 }}>{ok ? '✔' : '○'}</span>
             {r.label}
           </li>
         );
@@ -28,53 +28,53 @@ function PasswordRules({ password }) {
 }
 
 function AuthScreen({ onAuth }) {
-  const [mode, setMode] = React.useState(‘register’);
-  const [step, setStep] = React.useState(‘form’); // ‘form’ | ‘check-email’
-  const [username, setUsername] = React.useState(‘’);
-  const [email, setEmail] = React.useState(‘’);
-  const [password, setPassword] = React.useState(‘’);
-  const [err, setErr] = React.useState(‘’);
+  const [mode, setMode] = React.useState('register');
+  const [step, setStep] = React.useState('form'); // 'form' | 'check-email'
+  const [username, setUsername] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [err, setErr] = React.useState('');
   const [loading, setLoading] = React.useState(false);
 
   const pwValid = FM_PW_RULES.every((r) => r.test(password));
 
   const submitForm = async (e) => {
     e.preventDefault();
-    setErr(‘’);
+    setErr('');
     const u = username.trim();
     const em = email.trim();
 
-    if (mode === ‘signin’) {
-      if (!em || !password) { setErr(‘Enter your email and password.’); return; }
+    if (mode === 'signin') {
+      if (!em || !password) { setErr('Enter your email and password.'); return; }
       setLoading(true);
       const { data, error } = await window.FM_SB.auth.signInWithPassword({ email: em, password });
       setLoading(false);
       if (error) { setErr(error.message); return; }
       const meta = data.user.user_metadata;
-      onAuth({ username: meta.username || em, email: em, presence: ‘online’, status: meta.status || ‘’ });
+      onAuth({ username: meta.username || em, email: em, presence: 'online', status: meta.status || '' });
       return;
     }
 
     // register
-    if (!u) { setErr(‘Pick a username.’); return; }
-    if (/\s/.test(u)) { setErr(‘No spaces — use letters, numbers or _’); return; }
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { setErr(‘Enter a valid email address.’); return; }
-    if (!pwValid) { setErr(‘Please meet all password requirements.’); return; }
+    if (!u) { setErr('Pick a username.'); return; }
+    if (/\s/.test(u)) { setErr('No spaces — use letters, numbers or _'); return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { setErr('Enter a valid email address.'); return; }
+    if (!pwValid) { setErr('Please meet all password requirements.'); return; }
 
     setLoading(true);
     const { error } = await window.FM_SB.auth.signUp({
       email: em, password,
-      options: { data: { username: u, status: ‘’ } },
+      options: { data: { username: u, status: '' } },
     });
     setLoading(false);
     if (error) { setErr(error.message); return; }
-    setStep(‘check-email’);
+    setStep('check-email');
   };
 
   const resend = async () => {
-    setErr(‘’);
-    await window.FM_SB.auth.resend({ type: ‘signup’, email: email.trim() });
-    setErr(‘Resent! Check your inbox.’);
+    setErr('');
+    await window.FM_SB.auth.resend({ type: 'signup', email: email.trim() });
+    setErr('Resent! Check your inbox.');
   };
 
   return (
@@ -90,46 +90,46 @@ function AuthScreen({ onAuth }) {
           <p>Find someone to talk to about anything.</p>
         </div>
 
-        {step === ‘check-email’ ? (
-          <div className="fm-fields" style={{ textAlign: ‘center’, gap: 12 }}>
-            <h2 style={{ margin: ‘0 0 4px’, fontSize: 16 }}>Check your email</h2>
-            <p style={{ margin: 0, fontSize: 13, color: ‘var(--muted)’ }}>
-              We sent a confirmation link to <b style={{ color: ‘var(--ink)’ }}>{email}</b>.<br />
+        {step === 'check-email' ? (
+          <div className="fm-fields" style={{ textAlign: 'center', gap: 12 }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: 16 }}>Check your email</h2>
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)' }}>
+              We sent a confirmation link to <b style={{ color: 'var(--ink)' }}>{email}</b>.<br />
               Click it to activate your account, then come back and sign in.
             </p>
-            {err && <p className="fm-err" style={{ textAlign: ‘center’ }}>{err}</p>}
+            {err && <p className="fm-err" style={{ textAlign: 'center' }}>{err}</p>}
             <button type="button" className="fm-linkbtn" onClick={resend}>Resend email</button>
-            <span style={{ color: ‘var(--muted)’, fontSize: 12 }}> · </span>
-            <button type="button" className="fm-linkbtn" onClick={() => { setStep(‘form’); setMode(‘signin’); setErr(‘’); }}>Back to sign in</button>
+            <span style={{ color: 'var(--muted)', fontSize: 12 }}> · </span>
+            <button type="button" className="fm-linkbtn" onClick={() => { setStep('form'); setMode('signin'); setErr(''); }}>Back to sign in</button>
           </div>
         ) : (
           <React.Fragment>
             <div className="fm-tabs">
-              <button className={mode === ‘register’ ? ‘is-on’ : ‘’} onClick={() => { setMode(‘register’); setErr(‘’); }}>Create account</button>
-              <button className={mode === ‘signin’ ? ‘is-on’ : ‘’} onClick={() => { setMode(‘signin’); setErr(‘’); }}>Sign in</button>
+              <button className={mode === 'register' ? 'is-on' : ''} onClick={() => { setMode('register'); setErr(''); }}>Create account</button>
+              <button className={mode === 'signin' ? 'is-on' : ''} onClick={() => { setMode('signin'); setErr(''); }}>Sign in</button>
             </div>
             <form className="fm-fields" onSubmit={submitForm}>
-              {mode === ‘register’ && (
+              {mode === 'register' && (
                 <div>
                   <label>Username</label>
                   <input className="fm-input" value={username} autoFocus placeholder="e.g. dialup_dusk"
-                    onChange={(e) => { setUsername(e.target.value); setErr(‘’); }} />
+                    onChange={(e) => { setUsername(e.target.value); setErr(''); }} />
                 </div>
               )}
               <div>
                 <label>Email</label>
-                <input className="fm-input" type="email" value={email} autoFocus={mode === ‘signin’} placeholder="you@email.com"
-                  onChange={(e) => { setEmail(e.target.value); setErr(‘’); }} />
+                <input className="fm-input" type="email" value={email} autoFocus={mode === 'signin'} placeholder="you@email.com"
+                  onChange={(e) => { setEmail(e.target.value); setErr(''); }} />
               </div>
               <div>
                 <label>Password</label>
-                <input className="fm-input" type="password" value={password} placeholder={mode === ‘register’ ? ‘create a password’ : ‘your password’}
-                  onChange={(e) => { setPassword(e.target.value); setErr(‘’); }} />
-                {mode === ‘register’ && <PasswordRules password={password} />}
+                <input className="fm-input" type="password" value={password} placeholder={mode === 'register' ? 'create a password' : 'your password'}
+                  onChange={(e) => { setPassword(e.target.value); setErr(''); }} />
+                {mode === 'register' && <PasswordRules password={password} />}
               </div>
               {err && <p className="fm-err">{err}</p>}
               <button className="fm-btn fm-btn--primary" type="submit" disabled={loading} style={{ marginTop: 4 }}>
-                {loading ? ‘Please wait…’ : (mode === ‘register’ ? ‘Create account’ : ‘Sign in’)}
+                {loading ? 'Please wait…' : (mode === 'register' ? 'Create account' : 'Sign in')}
               </button>
             </form>
           </React.Fragment>
@@ -241,7 +241,7 @@ function TopicRow({ topic, onReach, requested }) {
       {!mine && (
         requested
           ? <span className="fm-cta fm-status-pill fm-status-pill--accepted">{'\u2714'} requested</span>
-          : <button className="fm-btn fm-btn--primary fm-cta" onClick={() => onReach(topic)}>Let’s talk!</button>
+          : <button className="fm-btn fm-btn--primary fm-cta" onClick={() => onReach(topic)}>Let's talk!</button>
       )}
     </article>
   );
@@ -366,16 +366,16 @@ function ReachOutModal({ topic, hidden, onMinimize, onClose, onSend }) {
 
           <label className="fm-field-label">Your message</label>
           <textarea className="fm-textarea" rows={3} autoFocus value={msg}
-            placeholder={'Hi ' + topic.name + '! I’d love to talk about this because…'}
+            placeholder={'Hi ' + topic.name + '! I'd love to talk about this because…'}
             onChange={(e) => setMsg(e.target.value)} />
 
           <label className="fm-field-label" style={{ marginTop: 14 }}>I also want to talk about… <span className="opt">(optional)</span></label>
-          <input className="fm-input" value={also} placeholder="anything else you’d like to chat about"
+          <input className="fm-input" value={also} placeholder="anything else you'd like to chat about"
             onChange={(e) => setAlso(e.target.value)} />
 
           <div className="fm-modal-foot">
             <button className="fm-btn fm-btn--ghost" onClick={onClose}>Cancel</button>
-            <button className="fm-btn fm-btn--accent" onClick={send} disabled={!msg.trim()}>Let’s talk!</button>
+            <button className="fm-btn fm-btn--accent" onClick={send} disabled={!msg.trim()}>Let's talk!</button>
           </div>
         </div>
       </div>
@@ -465,7 +465,7 @@ function ChatCard({ c, onOpenChat, past }) {
           <UserName name={c.name} />
           {unread && <span className="fm-unread-badge">{c.unread} new {c.unread === 1 ? 'reply' : 'replies'}</span>}
           {c.outcome === 'success' && <span className="fm-status-pill fm-status-pill--accepted">{'\u2714'} connected</span>}
-          {c.outcome === 'no' && <span className="fm-status-pill fm-status-pill--declined">didn’t work out</span>}
+          {c.outcome === 'no' && <span className="fm-status-pill fm-status-pill--declined">didn't work out</span>}
         </div>
         <h3 className="fm-title">{c.topicTitle}</h3>
         {last && (
@@ -522,12 +522,12 @@ function ChatsScreen({ requests, conversations, tab, setTab, onAccept, onDelete,
           )}
           {tab === 'past' && (
             <PagedList items={past} resetKey="past"
-              empty={<div className="fm-empty"><div className="big"><Hug /></div>No past chats yet — mark a conversation when you’re done.</div>}
+              empty={<div className="fm-empty"><div className="big"><Hug /></div>No past chats yet — mark a conversation when you're done.</div>}
               render={(c) => <ChatCard key={c.id} c={c} onOpenChat={onOpenChat} past />} />
           )}
           {tab === 'sent' && (
             <PagedList items={sent} resetKey="sent"
-              empty={<div className="fm-empty"><div className="big"><Hug /></div>You haven’t reached out to anyone yet — head to Browse.</div>}
+              empty={<div className="fm-empty"><div className="big"><Hug /></div>You haven't reached out to anyone yet — head to Browse.</div>}
               render={(r) => <SentCard key={r.id} req={r} onOpenChat={onOpenChat} />} />
           )}
         </div>
@@ -552,7 +552,7 @@ function ProfileScreen({ account, topics, conversations, onReach, theme, resolve
                 <div className="fm-meta fm-profile-meta">
                   <IDot presence={account.presence} />
                   <span className="fm-name" style={{ color: window.fmColorFor(account.username), fontSize: 'var(--fs-h2)' }}>{account.username}</span>
-                  <span className="fm-profile-status">{account.status ? '“' + account.status + '”' : 'no status yet'}</span>
+                  <span className="fm-profile-status">{account.status ? '"' + account.status + '"' : 'no status yet'}</span>
                 </div>
               </div>
             </div>
@@ -575,7 +575,7 @@ function ProfileScreen({ account, topics, conversations, onReach, theme, resolve
         </div>
         <div className="fm-section"><h3>Your topics</h3></div>
         <PagedList items={mine} perPage={FM_PER_PAGE} containerClass="fm-feed" resetKey="mine"
-          empty={<div className="fm-empty" style={{ padding: 20 }}>You haven’t posted a topic yet — try the Browse tab.</div>}
+          empty={<div className="fm-empty" style={{ padding: 20 }}>You haven't posted a topic yet — try the Browse tab.</div>}
           render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach || (() => {})} />} />
       </div>
     </div>

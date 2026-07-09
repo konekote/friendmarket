@@ -75,7 +75,7 @@ window.fmSeed = function () {
     ] },
     cvb: { id: 'cvb', name: 'fern_gully', presence: 'online', topicTitle: 'First-time houseplant panic', outcome: null, unread: 1, messages: [
       { from: 'me', text: 'ok deep breath — how often are you watering it?', mine: true },
-      { from: 'fern_gully', text: 'maybe… every other day? is that bad? that’s bad isn’t it', mine: false },
+      { from: 'fern_gully', text: 'maybe… every other day? is that bad? that's bad isn't it', mine: false },
     ] },
   };
   pastDefs.forEach((d, i) => { conversations['cp' + i] = conv('cp' + i, d[0], d[1], d[2], d[3]); });
