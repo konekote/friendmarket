@@ -1,37 +1,52 @@
 // FriendMarket prototype — screens.
 
-// ---------- AUTH (register → confirm code, or sign in) ----------
+// ---------- AUTH ----------
 function AuthScreen({ onAuth }) {
-  const [mode, setMode] = React.useState('register');
-  const [step, setStep] = React.useState('form'); // 'form' | 'confirm'
-  const [username, setUsername] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [code, setCode] = React.useState('');
-  const [err, setErr] = React.useState('');
-  const sent = React.useRef('');
+  const [mode, setMode] = React.useState(‘register’);
+  const [step, setStep] = React.useState(‘form’); // ‘form’ | ‘check-email’
+  const [username, setUsername] = React.useState(‘’);
+  const [email, setEmail] = React.useState(‘’);
+  const [password, setPassword] = React.useState(‘’);
+  const [err, setErr] = React.useState(‘’);
+  const [loading, setLoading] = React.useState(false);
 
-  const genCode = () => { sent.current = String(Math.floor(100000 + Math.random() * 900000)); };
-
-  const submitForm = (e) => {
+  const submitForm = async (e) => {
     e.preventDefault();
+    setErr(‘’);
     const u = username.trim();
-    if (!u) { setErr('Pick a username.'); return; }
-    if (/\s/.test(u)) { setErr('No spaces — use letters, numbers or _'); return; }
-    if (mode === 'signin') {
-      if (!password) { setErr('Enter your password.'); return; }
-      onAuth({ username: u, email: '', presence: 'online', status: '' });
+    const em = email.trim();
+
+    if (mode === ‘signin’) {
+      if (!em || !password) { setErr(‘Enter your email and password.’); return; }
+      setLoading(true);
+      const { data, error } = await window.FM_SB.auth.signInWithPassword({ email: em, password });
+      setLoading(false);
+      if (error) { setErr(error.message); return; }
+      const meta = data.user.user_metadata;
+      onAuth({ username: meta.username || em, email: em, presence: ‘online’, status: meta.status || ‘’ });
       return;
     }
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) { setErr('Enter a valid email address.'); return; }
-    if (password.length < 6) { setErr('Password should be at least 6 characters.'); return; }
-    genCode(); setErr(''); setCode(''); setStep('confirm');
+
+    // register
+    if (!u) { setErr(‘Pick a username.’); return; }
+    if (/\s/.test(u)) { setErr(‘No spaces — use letters, numbers or _’); return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { setErr(‘Enter a valid email address.’); return; }
+    if (password.length < 6) { setErr(‘Password must be at least 6 characters.’); return; }
+
+    setLoading(true);
+    const { error } = await window.FM_SB.auth.signUp({
+      email: em, password,
+      options: { data: { username: u, status: ‘’ } },
+    });
+    setLoading(false);
+    if (error) { setErr(error.message); return; }
+    setStep(‘check-email’);
   };
 
-  const confirm = (e) => {
-    e.preventDefault();
-    if (code.trim() !== sent.current) { setErr('That code doesn’t match — check the demo hint below.'); return; }
-    onAuth({ username: username.trim(), email: email.trim(), presence: 'online', status: '' });
+  const resend = async () => {
+    setErr(‘’);
+    await window.FM_SB.auth.resend({ type: ‘signup’, email: email.trim() });
+    setErr(‘Resent! Check your inbox.’);
   };
 
   return (
@@ -47,54 +62,48 @@ function AuthScreen({ onAuth }) {
           <p>Find someone to talk to about anything.</p>
         </div>
 
-        {step === 'form' ? (
+        {step === ‘check-email’ ? (
+          <div className="fm-fields" style={{ textAlign: ‘center’, gap: 12 }}>
+            <h2 style={{ margin: ‘0 0 4px’, fontSize: 16 }}>Check your email</h2>
+            <p style={{ margin: 0, fontSize: 13, color: ‘var(--muted)’ }}>
+              We sent a confirmation link to <b style={{ color: ‘var(--ink)’ }}>{email}</b>.<br />
+              Click it to activate your account, then come back and sign in.
+            </p>
+            {err && <p className="fm-err" style={{ textAlign: ‘center’ }}>{err}</p>}
+            <button type="button" className="fm-linkbtn" onClick={resend}>Resend email</button>
+            <span style={{ color: ‘var(--muted)’, fontSize: 12 }}> · </span>
+            <button type="button" className="fm-linkbtn" onClick={() => { setStep(‘form’); setMode(‘signin’); setErr(‘’); }}>Back to sign in</button>
+          </div>
+        ) : (
           <React.Fragment>
             <div className="fm-tabs">
-              <button className={mode === 'register' ? 'is-on' : ''} onClick={() => { setMode('register'); setErr(''); }}>Create account</button>
-              <button className={mode === 'signin' ? 'is-on' : ''} onClick={() => { setMode('signin'); setErr(''); }}>Sign in</button>
+              <button className={mode === ‘register’ ? ‘is-on’ : ‘’} onClick={() => { setMode(‘register’); setErr(‘’); }}>Create account</button>
+              <button className={mode === ‘signin’ ? ‘is-on’ : ‘’} onClick={() => { setMode(‘signin’); setErr(‘’); }}>Sign in</button>
             </div>
             <form className="fm-fields" onSubmit={submitForm}>
-              <div>
-                <label>Username</label>
-                <input className="fm-input" value={username} autoFocus placeholder="e.g. dialup_dusk"
-                  onChange={(e) => { setUsername(e.target.value); setErr(''); }} />
-              </div>
-              {mode === 'register' && (
+              {mode === ‘register’ && (
                 <div>
-                  <label>Email</label>
-                  <input className="fm-input" type="email" value={email} placeholder="you@email.com"
-                    onChange={(e) => { setEmail(e.target.value); setErr(''); }} />
+                  <label>Username</label>
+                  <input className="fm-input" value={username} autoFocus placeholder="e.g. dialup_dusk"
+                    onChange={(e) => { setUsername(e.target.value); setErr(‘’); }} />
                 </div>
               )}
               <div>
+                <label>Email</label>
+                <input className="fm-input" type="email" value={email} autoFocus={mode === ‘signin’} placeholder="you@email.com"
+                  onChange={(e) => { setEmail(e.target.value); setErr(‘’); }} />
+              </div>
+              <div>
                 <label>Password</label>
-                <input className="fm-input" type="password" value={password} placeholder={mode === 'register' ? 'at least 6 characters' : 'your password'}
-                  onChange={(e) => { setPassword(e.target.value); setErr(''); }} />
+                <input className="fm-input" type="password" value={password} placeholder={mode === ‘register’ ? ‘at least 6 characters’ : ‘your password’}
+                  onChange={(e) => { setPassword(e.target.value); setErr(‘’); }} />
               </div>
               {err && <p className="fm-err">{err}</p>}
-              <button className="fm-btn fm-btn--primary" type="submit" style={{ marginTop: 4 }}>
-                {mode === 'register' ? 'Create account' : 'Sign in'}
+              <button className="fm-btn fm-btn--primary" type="submit" disabled={loading} style={{ marginTop: 4 }}>
+                {loading ? ‘Please wait…’ : (mode === ‘register’ ? ‘Create account’ : ‘Sign in’)}
               </button>
             </form>
-            <p className="fm-auth-note">This is a prototype — your account lives only in this browser.</p>
           </React.Fragment>
-        ) : (
-          <form className="fm-fields" onSubmit={confirm}>
-            <div style={{ textAlign: 'center', marginBottom: 4 }}>
-              <h2 style={{ margin: '0 0 4px', fontSize: 16 }}>Check your email</h2>
-              <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)' }}>We sent a 6-digit code to <b style={{ color: 'var(--ink)' }}>{email}</b></p>
-            </div>
-            <input className="fm-code-input" value={code} autoFocus inputMode="numeric" maxLength={6} placeholder="······"
-              onChange={(e) => { setCode(e.target.value.replace(/\D/g, '')); setErr(''); }} />
-            {err && <p className="fm-err" style={{ textAlign: 'center' }}>{err}</p>}
-            <button className="fm-btn fm-btn--primary" type="submit">Confirm &amp; enter</button>
-            <div style={{ textAlign: 'center' }}>
-              <button type="button" className="fm-linkbtn" onClick={() => { genCode(); setErr(''); }}>Resend code</button>
-              <span style={{ color: 'var(--muted)', fontSize: 12 }}> · </span>
-              <button type="button" className="fm-linkbtn" onClick={() => { setStep('form'); setErr(''); }}>Back</button>
-            </div>
-            <div className="fm-demo-hint">Demo: no real email is sent. Your code is <b>{sent.current}</b></div>
-          </form>
         )}
       </div>
     </div>
