@@ -49,7 +49,7 @@ function AuthScreen({ onAuth }) {
       setLoading(true);
       const { data, error } = await window.FM_SB.auth.signInWithPassword({ email: em, password });
       setLoading(false);
-      if (error) { setErr(error.message); return; }
+      if (error) { setErr(error.status === 429 ? 'Too many attempts — please wait a few minutes and try again.' : error.message); return; }
       const meta = data.user.user_metadata;
       onAuth({ username: meta.username || em, email: em, presence: 'online', status: meta.status || '' });
       return;
