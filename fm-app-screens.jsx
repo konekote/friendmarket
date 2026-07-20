@@ -64,7 +64,10 @@ function AuthScreen({ onAuth }) {
     setLoading(true);
     const { error } = await window.FM_SB.auth.signUp({
       email: em, password,
-      options: { data: { username: u, status: '' } },
+      options: {
+        data: { username: u, status: '' },
+        emailRedirectTo: 'https://konekote.github.io/friendmarket',
+      },
     });
     setLoading(false);
     if (error) { setErr(error.message); return; }
