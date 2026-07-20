@@ -97,7 +97,10 @@ function App() {
   }, []);
 
   // ---- auth ----
-  const onAuth = (acct) => { setS((p) => ({ ...p, account: acct, view: 'browse' })); };
+  const onAuth = (acct) => {
+    localStorage.removeItem(window.FM_STORE_KEY);
+    setS({ account: acct, view: 'browse', topics: [], requests: [], conversations: {}, openChats: [] });
+  };
   const onLogout = async () => {
     await window.FM_SB.auth.signOut();
     setToasts([]); setMinChats([]); setReachTopic(null); setReachMin(false);
