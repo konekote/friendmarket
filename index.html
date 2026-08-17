@@ -99,9 +99,14 @@ function App() {
   }, []);
 
   // ---- auth ----
+  // freshLogin: called when user signs in via form — reset state
+  // sessionRestore: called on page load when a session already exists — keep saved state
   const onAuth = (acct) => {
     localStorage.removeItem(window.FM_STORE_KEY);
     setS({ account: acct, view: 'browse', topics: [], requests: [], conversations: {}, openChats: [] });
+  };
+  const onSessionRestore = (acct) => {
+    setS((p) => ({ ...p, account: acct, view: p.view || 'browse' }));
   };
   const onLogout = async () => {
     await window.FM_SB.auth.signOut();
@@ -115,7 +120,7 @@ function App() {
     window.FM_SB.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         const meta = session.user.user_metadata;
-        onAuth({ username: meta.username || session.user.email, email: session.user.email, presence: 'online', status: meta.status || '' });
+        onSessionRestore({ username: meta.username || session.user.email, email: session.user.email, presence: 'online', status: meta.status || '' });
       }
     });
     const { data: { subscription } } = window.FM_SB.auth.onAuthStateChange((event, session) => {
