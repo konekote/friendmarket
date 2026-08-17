@@ -681,7 +681,7 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
     <div className={'fm-backdrop' + (hidden ? ' is-hidden' : '')} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="fm-modal fm-win fm-userprofile">
         <div className="fm-titlebar">
-          <span className="fm-tb-title"><Hug size={15} /> {isMe ? 'Your profile' : name + '’s profile'}</span>
+          <span className="fm-tb-title"><Hug size={15} /> {isMe ? 'Your profile' : name + ''s profile'}</span>
           <WinButtons variant="popup" onMinimize={onMinimize} onClose={onClose} />
         </div>
         <div className="fm-modal-body">
@@ -692,7 +692,7 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
                 <IDot presence={presence} />
                 <span className="fm-name" style={{ color: window.fmColorFor(name), fontSize: 'var(--fs-h2)' }}>{name}</span>
               </div>
-              {status && <div className=”fm-up-status fm-quoted”>{status}</div>}
+              {status && <div className="fm-up-status fm-quoted">{status}</div>}
             </div>
           </div>
           <div className="fm-up-stats">
