@@ -617,7 +617,7 @@ function ProfileScreen({ account, topics, conversations, onReach, onDelete, them
                 <div className="fm-meta fm-profile-meta">
                   <IDot presence={account.presence} />
                   <span className="fm-name" style={{ color: window.fmColorFor(account.username), fontSize: 'var(--fs-h2)' }}>{account.username}</span>
-                  {account.status && <span className="fm-profile-status">{'"'}{account.status}{'"'}</span>}
+                  {account.status && <span className="fm-profile-status">&ldquo;{account.status}&rdquo;</span>}
                 </div>
               </div>
             </div>
@@ -692,7 +692,7 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
                 <IDot presence={presence} />
                 <span className="fm-name" style={{ color: window.fmColorFor(name), fontSize: 'var(--fs-h2)' }}>{name}</span>
               </div>
-              {status && <div className=”fm-up-status”>{'”'}{status}{'”'}</div>}
+              {status && <div className=”fm-up-status”>&ldquo;{status}&rdquo;</div>}
             </div>
           </div>
           <div className="fm-up-stats">
