@@ -27,6 +27,24 @@ function PasswordRules({ password }) {
   );
 }
 
+function PasswordInput({ value, onChange, placeholder }) {
+  const [show, setShow] = React.useState(false);
+  return (
+    <div style={{ position: 'relative' }}>
+      <input className="fm-input" type={show ? 'text' : 'password'} value={value}
+        placeholder={placeholder} style={{ paddingRight: 38 }}
+        onChange={onChange} />
+      <button type="button" onClick={() => setShow((s) => !s)}
+        style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
+          background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+          color: 'var(--muted)', fontSize: 15, lineHeight: 1 }}
+        aria-label={show ? 'Hide password' : 'Show password'}>
+        {show ? '🙈' : '👁'}
+      </button>
+    </div>
+  );
+}
+
 function AuthScreen({ onAuth }) {
   const [mode, setMode] = React.useState('register');
   const [step, setStep] = React.useState('form'); // 'form' | 'check-email' | 'forgot' | 'forgot-sent'
@@ -163,7 +181,7 @@ function AuthScreen({ onAuth }) {
               </div>
               <div>
                 <label>Password</label>
-                <input className="fm-input" type="password" value={password} placeholder={mode === 'register' ? 'create a password' : 'your password'}
+                <PasswordInput value={password} placeholder={mode === 'register' ? 'create a password' : 'your password'}
                   onChange={(e) => { setPassword(e.target.value); setErr(''); }} />
                 {mode === 'register' && <PasswordRules password={password} />}
               </div>
@@ -742,13 +760,13 @@ function ResetPasswordScreen({ onDone }) {
             <h2 style={{ margin: '0 0 4px', fontSize: 16 }}>Choose a new password</h2>
             <div>
               <label>New password</label>
-              <input className="fm-input" type="password" value={password} autoFocus placeholder="create a password"
+              <PasswordInput value={password} placeholder="create a password"
                 onChange={(e) => { setPassword(e.target.value); setErr(''); }} />
               <PasswordRules password={password} />
             </div>
             <div>
               <label>Confirm password</label>
-              <input className="fm-input" type="password" value={confirm} placeholder="repeat your password"
+              <PasswordInput value={confirm} placeholder="repeat your password"
                 onChange={(e) => { setConfirm(e.target.value); setErr(''); }} />
             </div>
             {err && <p className="fm-err">{err}</p>}
