@@ -55,6 +55,7 @@ function App() {
   const menuRef = useRef(null);
   const [recentMine, setRecentMine] = useState([]); // topics you just posted, shown in Browse this session
   const [toasts, setToasts] = useState([]);
+  const [resetMode, setResetMode] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('friendmarket:theme') || 'auto');
   const toastTimers = useRef({});
 
@@ -117,6 +118,7 @@ function App() {
       }
     });
     const { data: { subscription } } = window.FM_SB.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') { setResetMode(true); }
       if (event === 'SIGNED_OUT') setS((p) => ({ ...p, account: null, view: 'browse' }));
     });
     return () => subscription.unsubscribe();
@@ -249,6 +251,15 @@ function App() {
   };
 
   // ---- render ----
+
+  if (resetMode) {
+    return (
+      <div className="fmw fm-desktop" data-theme={resolvedDark ? 'dark' : 'light'}>
+        <ThemeToggle theme={theme} onChange={setTheme} />
+        <ResetPasswordScreen onDone={() => { setResetMode(false); }} />
+      </div>
+    );
+  }
 
   if (!s.account) {
     return (

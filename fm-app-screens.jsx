@@ -29,7 +29,7 @@ function PasswordRules({ password }) {
 
 function AuthScreen({ onAuth }) {
   const [mode, setMode] = React.useState('register');
-  const [step, setStep] = React.useState('form'); // 'form' | 'check-email'
+  const [step, setStep] = React.useState('form'); // 'form' | 'check-email' | 'forgot' | 'forgot-sent'
   const [username, setUsername] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -80,6 +80,19 @@ function AuthScreen({ onAuth }) {
     setErr('Resent! Check your inbox.');
   };
 
+  const sendReset = async (e) => {
+    e.preventDefault();
+    setErr('');
+    const em = email.trim();
+    if (!em) { setErr('Enter your email address.'); return; }
+    setLoading(true);
+    await window.FM_SB.auth.resetPasswordForEmail(em, {
+      redirectTo: 'https://konekote.github.io/friendmarket',
+    });
+    setLoading(false);
+    setStep('forgot-sent');
+  };
+
   return (
     <div className="fm-auth fm-win">
       <div className="fm-titlebar">
@@ -93,7 +106,31 @@ function AuthScreen({ onAuth }) {
           <p>Find someone to talk to about anything.</p>
         </div>
 
-        {step === 'check-email' ? (
+        {step === 'forgot-sent' ? (
+          <div className="fm-fields" style={{ textAlign: 'center', gap: 12 }}>
+            <h2 style={{ margin: '0 0 4px', fontSize: 16 }}>Check your email</h2>
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)' }}>
+              We sent a password reset link to <b style={{ color: 'var(--ink)' }}>{email}</b>.<br />
+              Click it to choose a new password.
+            </p>
+            <button type="button" className="fm-linkbtn" onClick={() => { setStep('form'); setMode('signin'); setErr(''); }}>Back to sign in</button>
+          </div>
+        ) : step === 'forgot' ? (
+          <form className="fm-fields" onSubmit={sendReset}>
+            <p style={{ margin: '0 0 4px', fontSize: 13, color: 'var(--muted)' }}>Enter your email and we will send you a reset link.</p>
+            <div>
+              <label>Email</label>
+              <input className="fm-input" type="email" value={email} autoFocus placeholder="you@email.com"
+                onChange={(e) => { setEmail(e.target.value); setErr(''); }} />
+            </div>
+            {err && <p className="fm-err">{err}</p>}
+            <button className="fm-btn fm-btn--primary" type="submit" disabled={loading}>
+              {loading ? 'Sending…' : 'Send reset link'}
+            </button>
+            <button type="button" className="fm-linkbtn" style={{ textAlign: 'center' }}
+              onClick={() => { setStep('form'); setMode('signin'); setErr(''); }}>Back to sign in</button>
+          </form>
+        ) : step === 'check-email' ? (
           <div className="fm-fields" style={{ textAlign: 'center', gap: 12 }}>
             <h2 style={{ margin: '0 0 4px', fontSize: 16 }}>Check your email</h2>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)' }}>
@@ -134,6 +171,10 @@ function AuthScreen({ onAuth }) {
               <button className="fm-btn fm-btn--primary" type="submit" disabled={loading} style={{ marginTop: 4 }}>
                 {loading ? 'Please wait…' : (mode === 'register' ? 'Create account' : 'Sign in')}
               </button>
+              {mode === 'signin' && (
+                <button type="button" className="fm-linkbtn" style={{ textAlign: 'center', marginTop: 2 }}
+                  onClick={() => { setStep('forgot'); setErr(''); }}>Forgot password?</button>
+              )}
             </form>
           </React.Fragment>
         )}
@@ -659,4 +700,66 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
   );
 }
 
-Object.assign(window, { AuthScreen, MeBar, ComposeModal, TopicRow, Pager, PagedList, BrowseScreen, ReachOutModal, ChatsScreen, ProfileScreen, Stat, UserProfileModal });
+// ---------- RESET PASSWORD ----------
+function ResetPasswordScreen({ onDone }) {
+  const [password, setPassword] = React.useState('');
+  const [confirm, setConfirm] = React.useState('');
+  const [err, setErr] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
+  const [done, setDone] = React.useState(false);
+  const pwValid = FM_PW_RULES.every((r) => r.test(password));
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setErr('');
+    if (!pwValid) { setErr('Please meet all password requirements.'); return; }
+    if (password !== confirm) { setErr("Passwords don't match."); return; }
+    setLoading(true);
+    const { error } = await window.FM_SB.auth.updateUser({ password });
+    setLoading(false);
+    if (error) { setErr(error.message); return; }
+    setDone(true);
+    setTimeout(onDone, 2000);
+  };
+
+  return (
+    <div className="fm-auth fm-win">
+      <div className="fm-titlebar">
+        <span className="fm-tb-title"><Hug size={15} /> FriendMarket</span>
+        <WinButtons variant="main" />
+      </div>
+      <div className="fm-auth-body">
+        <div className="fm-auth-hero">
+          <div className="mark"><Hug size={40} /></div>
+          <h1>Friend<b>Market</b></h1>
+        </div>
+        {done ? (
+          <div className="fm-fields" style={{ textAlign: 'center' }}>
+            <p style={{ color: 'var(--accent-2)', fontWeight: 600 }}>Password updated! Signing you in…</p>
+          </div>
+        ) : (
+          <form className="fm-fields" onSubmit={submit}>
+            <h2 style={{ margin: '0 0 4px', fontSize: 16 }}>Choose a new password</h2>
+            <div>
+              <label>New password</label>
+              <input className="fm-input" type="password" value={password} autoFocus placeholder="create a password"
+                onChange={(e) => { setPassword(e.target.value); setErr(''); }} />
+              <PasswordRules password={password} />
+            </div>
+            <div>
+              <label>Confirm password</label>
+              <input className="fm-input" type="password" value={confirm} placeholder="repeat your password"
+                onChange={(e) => { setConfirm(e.target.value); setErr(''); }} />
+            </div>
+            {err && <p className="fm-err">{err}</p>}
+            <button className="fm-btn fm-btn--primary" type="submit" disabled={loading}>
+              {loading ? 'Saving…' : 'Set new password'}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { AuthScreen, MeBar, ComposeModal, TopicRow, Pager, PagedList, BrowseScreen, ReachOutModal, ChatsScreen, ProfileScreen, Stat, UserProfileModal, ResetPasswordScreen });
