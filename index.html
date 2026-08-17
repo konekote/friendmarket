@@ -127,7 +127,7 @@ function App() {
   const onSetPresence = (presence) => patch((p) => ({ ...p, account: { ...p.account, presence } }));
 
   // ---- delete own topic ----
-  const onDeleteTopic = (id) => { if (confirm('Delete this topic? This can't be undone.')) patch((p) => ({ ...p, topics: p.topics.filter((t) => t.id !== id) })); };
+  const onDeleteTopic = (id) => { if (confirm("Delete this topic? This can't be undone.")) patch((p) => ({ ...p, topics: p.topics.filter((t) => t.id !== id) })); };
 
   // ---- posting ----
   const onPost = (t) => {
