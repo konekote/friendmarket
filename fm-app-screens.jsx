@@ -217,7 +217,7 @@ function ComposeModal({ onPost, onClose, hidden, onMinimize }) {
 }
 
 // ---------- TOPIC ROW ----------
-function TopicRow({ topic, onReach, requested }) {
+function TopicRow({ topic, onReach, onDelete, requested }) {
   const mine = topic.mine;
   const r = topic.replies || 0;
   return (
@@ -241,6 +241,9 @@ function TopicRow({ topic, onReach, requested }) {
         </div>
       </div>
       <span className="fm-time">{window.fmTimeLabel(topic.ts)}</span>
+      {mine && onDelete && (
+        <button className="fm-btn fm-btn--ghost fm-btn--sm fm-btn--danger fm-cta" onClick={() => onDelete(topic.id)}>Delete</button>
+      )}
       {!mine && (
         requested
           ? <span className="fm-cta fm-status-pill fm-status-pill--accepted">{'✔'} requested</span>
@@ -292,7 +295,7 @@ function PagedList({ items, perPage, render, empty, containerClass, resetKey }) 
 const FM_SORTS = [['newest', 'Newest first'], ['oldest', 'Oldest first'], ['most', 'Most replies'], ['least', 'Least replies']];
 const FM_PER_PAGE = 10;
 
-function BrowseScreen({ topics, recentMine, onReach, requestedTitles }) {
+function BrowseScreen({ topics, recentMine, onReach, onDelete, requestedTitles }) {
   const [q, setQ] = React.useState('');
   const [cat, setCat] = React.useState('All');
   const [sort, setSort] = React.useState('newest');
@@ -337,7 +340,7 @@ function BrowseScreen({ topics, recentMine, onReach, requestedTitles }) {
         <PagedList items={list} perPage={FM_PER_PAGE} containerClass="fm-feed"
           resetKey={q + '|' + cat + '|' + sort}
           empty={<div className="fm-empty"><div className="big"><Hug /></div>No topics match. Try a different search or category.</div>}
-          render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach} requested={requestedTitles && requestedTitles.has(t.title)} />} />
+          render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach} onDelete={onDelete} requested={requestedTitles && requestedTitles.has(t.title)} />} />
       </div>
     </div>
   );
@@ -540,7 +543,7 @@ function ChatsScreen({ requests, conversations, tab, setTab, onAccept, onDelete,
 }
 
 // ---------- PROFILE ----------
-function ProfileScreen({ account, topics, conversations, onReach, theme, onSetTheme, onLogout }) {
+function ProfileScreen({ account, topics, conversations, onReach, onDelete, theme, onSetTheme, onLogout }) {
   const mine = topics.filter((t) => t.mine);
   const convs = Object.values(conversations);
   const success = convs.filter((c) => c.outcome === 'success').length;
@@ -589,7 +592,7 @@ function ProfileScreen({ account, topics, conversations, onReach, theme, onSetTh
         <div className="fm-section"><h3>Your topics</h3></div>
         <PagedList items={mine} perPage={FM_PER_PAGE} containerClass="fm-feed" resetKey="mine"
           empty={<div className="fm-empty" style={{ padding: 20 }}>You haven't posted a topic yet — try the Browse tab.</div>}
-          render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach || (() => {})} />} />
+          render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach || (() => {})} onDelete={onDelete} />} />
       </div>
     </div>
   );

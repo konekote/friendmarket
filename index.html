@@ -126,6 +126,9 @@ function App() {
   const onSetStatus = (status) => patch((p) => ({ ...p, account: { ...p.account, status } }));
   const onSetPresence = (presence) => patch((p) => ({ ...p, account: { ...p.account, presence } }));
 
+  // ---- delete own topic ----
+  const onDeleteTopic = (id) => patch((p) => ({ ...p, topics: p.topics.filter((t) => t.id !== id) }));
+
   // ---- posting ----
   const onPost = (t) => {
     const id = window.fmUid();
@@ -303,9 +306,9 @@ function App() {
         </div>
         <MeBar account={s.account} onSetStatus={onSetStatus} onSetPresence={onSetPresence} />
 
-        {s.view === 'browse' && <BrowseScreen topics={s.topics} recentMine={recentMine} onReach={(t) => { setReachTopic(t); setReachMin(false); }} requestedTitles={requestedTitles} />}
+        {s.view === 'browse' && <BrowseScreen topics={s.topics} recentMine={recentMine} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} requestedTitles={requestedTitles} />}
         {s.view === 'requests' && <ChatsScreen requests={s.requests} conversations={s.conversations} tab={reqTab} setTab={setReqTab} onAccept={onAccept} onDelete={onDelete} onOpenChat={(id) => { onOpenChat(id); }} />}
-        {s.view === 'profile' && <ProfileScreen account={s.account} topics={s.topics} conversations={s.conversations} onReach={(t) => { setReachTopic(t); setReachMin(false); }} theme={theme} onSetTheme={setTheme} onLogout={onLogout} />}
+        {s.view === 'profile' && <ProfileScreen account={s.account} topics={s.topics} conversations={s.conversations} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} theme={theme} onSetTheme={setTheme} onLogout={onLogout} />}
       </div>
 
       {/* post a new topic modal */}
