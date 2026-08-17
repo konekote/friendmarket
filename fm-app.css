@@ -175,8 +175,8 @@
 .fm-idot--offline { background: var(--offline); }
 .fm-name { font-weight: 700; font-size: var(--fs-ui); }
 .fm-mstatus { flex: 1 1 auto; font-size: var(--fs-meta); color: var(--muted); font-style: italic; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-.fm-mstatus::before { content: '\201c'; }
-.fm-mstatus::after { content: '\201d'; }
+.fm-mstatus:not(:empty)::before { content: '\201c'; }
+.fm-mstatus:not(:empty)::after { content: '\201d'; }
 .fm-mine-tag { font-size: var(--fs-micro); font-weight: 700; letter-spacing: .4px; color: #5a8a00; background: #eaf6d6; border-radius: 5px; padding: 1px 6px; }
 .fm-time { position: absolute; top: 13px; right: 16px; font-size: var(--fs-meta); color: var(--muted); white-space: nowrap; }
 .fm-title { margin: 2px 0 4px; font-size: var(--fs-h1); font-weight: 700; letter-spacing: -.2px; line-height: 1.25; }
