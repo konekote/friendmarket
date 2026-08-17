@@ -242,7 +242,7 @@ function TopicRow({ topic, onReach, onDelete, requested }) {
       </div>
       <span className="fm-time">{window.fmTimeLabel(topic.ts)}</span>
       {mine && onDelete && (
-        <button className="fm-btn fm-btn--ghost fm-btn--sm fm-btn--danger fm-cta" onClick={() => onDelete(topic.id)}>Delete</button>
+        <button type="button" className="fm-btn fm-btn--ghost fm-btn--sm fm-btn--danger fm-cta" onClick={() => onDelete(topic.id)}>Delete</button>
       )}
       {!mine && (
         requested
