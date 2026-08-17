@@ -255,7 +255,6 @@ function App() {
       <div className="fmw fm-desktop" data-theme={resolvedDark ? 'dark' : 'light'}>
         <ThemeToggle theme={theme} onChange={setTheme} />
         <AuthScreen onAuth={onAuth} />
-        <button className="fm-reset" onClick={() => { localStorage.removeItem(window.FM_STORE_KEY); location.reload(); }}>reset demo</button>
       </div>
     );
   }
@@ -377,7 +376,6 @@ function App() {
         ))}
       </div>
 
-      <button className="fm-reset" onClick={reset}>reset demo</button>
     </div>
   );
 }
