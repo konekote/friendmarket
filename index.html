@@ -102,8 +102,7 @@ function App() {
   // freshLogin: called when user signs in via form — reset state
   // sessionRestore: called on page load when a session already exists — keep saved state
   const onAuth = (acct) => {
-    localStorage.removeItem(window.FM_STORE_KEY);
-    setS({ account: acct, view: 'browse', topics: [], requests: [], conversations: {}, openChats: [] });
+    setS((p) => ({ ...p, account: acct, view: 'browse' }));
   };
   const onSessionRestore = (acct) => {
     setS((p) => ({ ...p, account: acct, view: p.view || 'browse' }));
