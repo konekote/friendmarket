@@ -56,6 +56,7 @@ function App() {
   const [recentMine, setRecentMine] = useState([]); // topics you just posted, shown in Browse this session
   const [toasts, setToasts] = useState([]);
   const [resetMode, setResetMode] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null); // topic id pending deletion
   const [theme, setTheme] = useState(() => localStorage.getItem('friendmarket:theme') || 'auto');
   const toastTimers = useRef({});
 
@@ -129,7 +130,8 @@ function App() {
   const onSetPresence = (presence) => patch((p) => ({ ...p, account: { ...p.account, presence } }));
 
   // ---- delete own topic ----
-  const onDeleteTopic = (id) => { if (confirm("Delete this topic? This can't be undone.")) patch((p) => ({ ...p, topics: p.topics.filter((t) => t.id !== id) })); };
+  const onDeleteTopic = (id) => setConfirmDelete(id);
+  const doDeleteTopic = () => { patch((p) => ({ ...p, topics: p.topics.filter((t) => t.id !== confirmDelete) })); setConfirmDelete(null); };
 
   // ---- posting ----
   const onPost = (t) => {
@@ -378,6 +380,11 @@ function App() {
             return null;
           })}
         </div>
+      )}
+
+      {confirmDelete && (
+        <ConfirmModal message="Delete this topic? This can't be undone."
+          confirmLabel="Delete topic" onConfirm={doDeleteTopic} onCancel={() => setConfirmDelete(null)} />
       )}
 
       {/* toasts */}

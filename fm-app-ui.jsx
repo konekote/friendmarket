@@ -206,4 +206,24 @@ function ChatWindow({ conv, myName, index, minimized, onMinimize, onClose, onSen
   );
 }
 
-Object.assign(window, { Hug, HugAva, IDot, UserName, Badge, WinButtons, PresenceDropdown, FmtToggle, ChatWindow, FM_PRES_LABEL, ThemeToggle });
+function ConfirmModal({ message, confirmLabel, onConfirm, onCancel }) {
+  return (
+    <div className="fm-backdrop">
+      <div className="fm-modal fm-win" style={{ maxWidth: 360 }}>
+        <div className="fm-titlebar">
+          <span className="fm-tb-title"><Hug size={15} /> Are you sure?</span>
+          <WinButtons variant="popup" onClose={onCancel} />
+        </div>
+        <div className="fm-modal-body">
+          <p style={{ margin: '0 0 20px', fontSize: 14, color: 'var(--ink)' }}>{message}</p>
+          <div className="fm-modal-foot">
+            <button type="button" className="fm-btn fm-btn--ghost" onClick={onCancel}>Cancel</button>
+            <button type="button" className="fm-btn fm-btn--danger" onClick={onConfirm}>{confirmLabel || 'Delete'}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { Hug, HugAva, IDot, UserName, Badge, WinButtons, PresenceDropdown, FmtToggle, ChatWindow, FM_PRES_LABEL, ThemeToggle, ConfirmModal });
