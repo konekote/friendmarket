@@ -612,17 +612,7 @@ function ProfileScreen({ account, topics, conversations, onReach, onDelete, them
       <div className="fm-scroll">
         <div className="fm-section">
           <div className="fm-profile-card" style={{ marginTop: 6 }}>
-            <div className="fm-profile-head">
-              <HugAva />
-              <div className="fm-profile-who">
-                <div className="fm-meta fm-profile-meta">
-                  <IDot presence={account.presence} />
-                  <span className="fm-name" style={{ color: window.fmColorFor(account.username), fontSize: 'var(--fs-h2)' }}>{account.username}</span>
-                  {account.status && <span className="fm-profile-status fm-quoted">{account.status}</span>}
-                </div>
-              </div>
-            </div>
-            <div className="fm-up-stats">
+            <div className="fm-up-stats" style={{ borderBottom: 'none', paddingBottom: 4 }}>
               <Stat n={mine.length} label="topics posted" />
               <Stat n={convs.length} label="conversations" />
               <Stat n={success} label="successful" />
@@ -685,12 +675,12 @@ function Stat({ n, label }) {
 // ---------- USER PROFILE (someone else's) ----------
 function UserProfileModal({ name, topics, requests, conversations, account, requestedTitles, onReach, onClose, hidden, onMinimize }) {
   // gather what we know about this person from the seed data
-  const theirTopics = topics.filter((t) => t.name === name && !t.mine);
+  const isMe = account && account.username === name;
+  const theirTopics = topics.filter((t) => t.name === name && (isMe || !t.mine));
   const fromTopic = topics.find((t) => t.name === name);
   const fromReq = requests.find((r) => r.name === name);
   const fromConv = Object.values(conversations).find((c) => c.name === name);
   const presence = (fromTopic && fromTopic.presence) || (fromReq && fromReq.presence) || (fromConv && fromConv.presence) || 'offline';
-  const isMe = account && account.username === name;
   const status = isMe ? (account.status || '') : ((fromTopic && fromTopic.status) || (fromReq && fromReq.senderStatus) || '');
   const convCount = Object.values(conversations).filter((c) => c.name === name).length;
 
@@ -714,7 +704,10 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
           </div>
           <div className="fm-up-stats">
             <Stat n={theirTopics.length} label={theirTopics.length === 1 ? 'topic posted' : 'topics posted'} />
-            <Stat n={convCount} label={convCount === 1 ? 'chat with you' : 'chats with you'} />
+            {isMe
+              ? <Stat n={Object.values(conversations).length} label="conversations" />
+              : <Stat n={convCount} label={convCount === 1 ? 'chat with you' : 'chats with you'} />}
+            {isMe && <Stat n={Object.values(conversations).filter((c) => c.outcome === 'success').length} label="successful" />}
           </div>
 
           <div className="fm-up-section">{isMe ? 'Your topics' : 'Topics ' + name + ' posted'}</div>
