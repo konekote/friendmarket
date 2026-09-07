@@ -84,13 +84,6 @@ window.fmSeed = function () {
     account: null, // { username, email, presence, status }
     view: 'browse',
     topics: [
-      { id: 'tp1', name: 'skin_collector99', presence: 'online', status: "llama whippin' again", title: 'The golden age of Winamp skins', desc: 'I miss customizing everything down to the EQ sliders. Swap favorites and talk skinning culture?', format: 'written', category: 'Technology', replies: 3, ts: daysBack(0), mine: false },
-      { id: 'tp2', name: 'midori_tron', presence: 'away', status: '頑張ってます · trying my best', title: 'Practicing conversational Japanese', desc: 'Hovering around N4. Looking for relaxed, slow chats — no pressure, lots of patience.', format: 'audio', category: 'Languages', replies: 1, ts: daysBack(0), mine: false },
-      { id: 'tp3', name: 'blue_swirl', presence: 'online', status: 'defending the VMU 4 life', title: 'Is the Dreamcast underrated?', desc: "Hot takes welcome. I'll go first: it was a full decade ahead of its time. Change my mind.", format: 'video', category: 'Gaming', replies: 5, ts: daysBack(1), mine: false },
-      { id: 'tp4', name: 'fern_gully', presence: 'online', status: 'overwatering, probably', title: 'First-time houseplant panic', desc: 'My pothos is yellowing and I need a calm friend to talk me down off the ledge.', format: 'written', category: 'Lifestyle', replies: 0, ts: daysBack(2), mine: false },
-      { id: 'tp5', name: 'reverb_kid', presence: 'away', status: '🎧 turned up loud', title: 'Trade dream-pop & shoegaze deep cuts', desc: "Give me your foggiest, most reverbed recommendations and I'll give you mine.", format: 'audio', category: 'Music', replies: 2, ts: daysBack(4), mine: false },
-      { id: 'tp6', name: 'flux_core', presence: 'online', status: 'smells like rosin', title: 'Anyone else learning to solder?', desc: 'Building a tiny synth and would love a buddy to troubleshoot with over video.', format: 'video', category: 'Technology', replies: 4, ts: daysBack(7), mine: false },
-      { id: 'tp7', name: 'paws_and_reflect', presence: 'online', status: 'three cats, zero regrets', title: 'Adopting a senior cat — worth it?', desc: 'Thinking of adopting an older rescue. Want to hear from people who have. The good and the hard parts.', format: 'written', category: 'Animals', replies: 6, ts: daysBack(3), mine: false },
       { id: 'dp1', name: 'dusk_pilot', presence: 'online', status: 'perpetually between timezones', title: 'Anyone moved abroad alone? How was month 1?', desc: 'Just landed in a new country with two suitcases and a lot of questions. Would love to compare notes with others who have done this.', format: 'written', category: 'Lifestyle', replies: 4, ts: daysBack(0), mine: false },
       { id: 'dp2', name: 'dusk_pilot', presence: 'online', status: 'perpetually between timezones', title: 'Favorite city for solo travel that felt totally safe?', desc: 'Not looking for adventure — looking for ease. Walkable, friendly, good food. Tell me where you felt immediately at home.', format: 'written', category: 'Travel', replies: 7, ts: daysBack(1), mine: false },
       { id: 'dp3', name: 'dusk_pilot', presence: 'online', status: 'perpetually between timezones', title: 'Let us swap film photography shots', desc: "Shooting on a beat-up Olympus OM-1. Happy to share scans and talk process, grain, and all the mistakes.", format: 'audio', category: 'Art', replies: 2, ts: daysBack(2), mine: false },
@@ -140,7 +133,7 @@ window.FM_REPLIES = [
 ];
 
 // ---- persistence ----
-window.FM_STORE_KEY = 'friendmarket:proto:v9';
+window.FM_STORE_KEY = 'friendmarket:proto:v10';
 window.fmLoad = function () {
   try { const raw = localStorage.getItem(window.FM_STORE_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
   return window.fmSeed();

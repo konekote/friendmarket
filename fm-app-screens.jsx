@@ -276,13 +276,13 @@ function ComposeModal({ onPost, onClose, hidden, onMinimize }) {
 }
 
 // ---------- TOPIC ROW ----------
-function TopicRow({ topic, onReach, onDelete, requested }) {
+function TopicRow({ topic, onReach, onDelete, requested, compact }) {
   const mine = topic.mine;
   const r = topic.replies || 0;
   return (
     <article className={'fm-row' + (mine ? ' is-mine' : '')}>
       <div className="fm-im-side">
-        <HugAva />
+        {!compact && <HugAva />}
         <Badge format={topic.format} />
         <span className="fm-im-time">{window.fmTimeLabel(topic.ts)}</span>
       </div>
@@ -293,7 +293,7 @@ function TopicRow({ topic, onReach, onDelete, requested }) {
           <span className="fm-mstatus">{topic.status}</span>
         </div>
         <h3 className="fm-title">{topic.title}</h3>
-        <p className="fm-desc">{topic.desc}</p>
+        {!compact && <p className="fm-desc">{topic.desc}</p>}
         <div className="fm-foot">
           <Badge format={topic.format} />
           <span className="fm-replies"><b>{r}</b> {r === 1 ? 'friend reached out' : 'friends reached out'}</span>
@@ -693,7 +693,6 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
         </div>
         <div className="fm-modal-body">
           <div className="fm-up-head">
-            <HugAva />
             <div className="fm-up-who">
               <div className="fm-up-name">
                 <IDot presence={presence} />
@@ -704,26 +703,22 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
           </div>
           <div className="fm-up-stats">
             <Stat n={theirTopics.length} label={theirTopics.length === 1 ? 'topic posted' : 'topics posted'} />
-            {isMe
-              ? <Stat n={Object.values(conversations).length} label="conversations" />
-              : <Stat n={convCount} label={convCount === 1 ? 'chat with you' : 'chats with you'} />}
-            {isMe && <Stat n={Object.values(conversations).filter((c) => c.outcome === 'success').length} label="successful" />}
+            <Stat n={isMe ? Object.values(conversations).length : convCount} label={isMe ? 'conversations' : (convCount === 1 ? 'chat with you' : 'chats with you')} />
+            <Stat n={isMe ? Object.values(conversations).filter((c) => c.outcome === 'success').length : Object.values(conversations).filter((c) => c.name === name && c.outcome === 'success').length} label="successful" />
           </div>
 
           <div className="fm-up-section">{isMe ? 'Your topics' : 'Topics ' + name + ' posted'}</div>
-          <div className="fm-up-topics-scroll">
-            {theirTopics.length === 0 ? (
-              <div className="fm-empty" style={{ padding: '14px 4px' }}>No open topics right now.</div>
-            ) : (
-              <div className="fm-feed" style={{ padding: '4px 0 2px' }}>
-                {theirTopics.map((t) => (
-                  <TopicRow key={t.id} topic={isMe ? { ...t, mine: true } : t}
-                    requested={requestedTitles && requestedTitles.has(t.title)}
-                    onReach={(tp) => { onClose(); onReach(tp); }} />
-                ))}
-              </div>
-            )}
-          </div>
+          {theirTopics.length === 0 ? (
+            <div className="fm-empty" style={{ padding: '14px 4px' }}>No open topics right now.</div>
+          ) : (
+            <PagedList items={theirTopics} perPage={5} containerClass="fm-feed" resetKey={name}
+              render={(t) => (
+                <TopicRow key={t.id} topic={isMe ? { ...t, mine: true } : t}
+                  compact={true}
+                  requested={requestedTitles && requestedTitles.has(t.title)}
+                  onReach={(tp) => { onClose(); onReach(tp); }} />
+              )} />
+          )}
         </div>
       </div>
     </div>
