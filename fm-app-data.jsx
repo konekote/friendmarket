@@ -140,7 +140,7 @@ window.FM_REPLIES = [
 ];
 
 // ---- persistence ----
-window.FM_STORE_KEY = 'friendmarket:proto:v7';
+window.FM_STORE_KEY = 'friendmarket:proto:v8';
 window.fmLoad = function () {
   try { const raw = localStorage.getItem(window.FM_STORE_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
   return window.fmSeed();
