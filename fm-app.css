@@ -406,6 +406,13 @@
 .fm-appearance .fm-theme-seg { border-color: var(--line); }
 .fmw[data-theme="dark"] .fm-appearance { background: #16242f; border-color: #2c3e4d; }
 .fmw[data-theme="dark"] .fm-appearance .fm-theme-seg { background: #16242f; border-color: #33485a; }
+.fm-appearance--danger { background: #fff5f5; border-color: #fca5a5; }
+.fm-appearance--danger .fm-appearance-title { color: #b91c1c; }
+.fm-appearance--danger .fm-appearance-sub { color: #ef4444; }
+.fmw[data-theme="dark"] .fm-appearance--danger { background: #2a1010; border-color: #7f1d1d; }
+.fmw[data-theme="dark"] .fm-appearance--danger .fm-appearance-title { color: #fca5a5; }
+.fmw[data-theme="dark"] .fm-appearance--danger .fm-appearance-sub { color: #f87171; }
+.fm-section--danger { padding-bottom: 32px; }
 
 /* composer (expanded): header toggles closed */
 /* composer (expanded): header toggles closed */

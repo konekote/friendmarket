@@ -653,13 +653,13 @@ function ProfileScreen({ account, topics, conversations, onReach, onDelete, them
         <PagedList items={mine} perPage={5} containerClass="fm-feed" resetKey="mine"
           empty={<div className="fm-empty" style={{ padding: 20 }}>You haven't posted a topic yet.</div>}
           render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach || (() => {})} onDelete={onDelete} />} />
-        <div className="fm-section">
-          <div className="fm-appearance">
+        <div className="fm-section fm-section--danger">
+          <div className="fm-appearance fm-appearance--danger">
             <div>
               <div className="fm-appearance-title">Delete account</div>
               <div className="fm-appearance-sub">Permanently remove your account and all your data.</div>
             </div>
-            <button type="button" className="fm-btn fm-btn--ghost fm-btn--danger" onClick={() => setConfirmDeleteAccount(true)}>Delete account</button>
+            <button type="button" className="fm-btn fm-btn--danger" onClick={() => setConfirmDeleteAccount(true)}>Delete account</button>
           </div>
         </div>
       </div>
