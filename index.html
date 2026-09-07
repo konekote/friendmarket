@@ -135,7 +135,7 @@ function App() {
 
   // ---- delete own topic ----
   const onDeleteTopic = (id) => setConfirmDelete(id);
-  const doDeleteTopic = () => { patch((p) => ({ ...p, topics: p.topics.filter((t) => t.id !== confirmDelete) })); setConfirmDelete(null); };
+  const doDeleteTopic = () => { patch((p) => ({ ...p, topics: p.topics.filter((t) => t.id !== confirmDelete) })); setConfirmDelete(null); addToast('🗑️', "Topic deleted."); };
 
   // ---- posting ----
   const onPost = (t) => {
