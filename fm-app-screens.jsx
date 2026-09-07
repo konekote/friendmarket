@@ -649,6 +649,10 @@ function ProfileScreen({ account, topics, conversations, onReach, onDelete, them
             <button type="button" className="fm-btn fm-btn--danger" onClick={onLogout}>Log out</button>
           </div>
         </div>
+        <div className="fm-section"><h3>Your topics</h3></div>
+        <PagedList items={mine} perPage={5} containerClass="fm-feed" resetKey="mine"
+          empty={<div className="fm-empty" style={{ padding: 20 }}>You haven't posted a topic yet.</div>}
+          render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach || (() => {})} onDelete={onDelete} />} />
         <div className="fm-section">
           <div className="fm-appearance">
             <div>
@@ -658,10 +662,6 @@ function ProfileScreen({ account, topics, conversations, onReach, onDelete, them
             <button type="button" className="fm-btn fm-btn--ghost fm-btn--danger" onClick={() => setConfirmDeleteAccount(true)}>Delete account</button>
           </div>
         </div>
-        <div className="fm-section"><h3>Your topics</h3></div>
-        <PagedList items={mine} perPage={5} containerClass="fm-feed" resetKey="mine"
-          empty={<div className="fm-empty" style={{ padding: 20 }}>You haven't posted a topic yet.</div>}
-          render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach || (() => {})} onDelete={onDelete} />} />
       </div>
       {confirmDeleteAccount && (
         <ConfirmModal
