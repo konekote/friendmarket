@@ -145,7 +145,7 @@ function App() {
       topics: [{ id, name: p.account.username, presence: p.account.presence, status: p.account.status, title: t.title, desc: t.desc, format: t.format, category: t.category, replies: 0, ts: Date.now(), mine: true }, ...p.topics],
     }));
     setRecentMine((m) => [id, ...m]);
-    addToast(‘📬’, "Your topic is live — it’s at the top of Browse.");
+    addToast(‘📬', "Your topic is live — it's at the top of Browse.");
   };
 
   // ---- reach out ----
@@ -240,7 +240,7 @@ function App() {
     patch((p) => {
       const c = p.conversations[convId];
       if (!c) return p;
-      return { ...p, conversations: { ...p.conversations, [convId]: { ...c, outcome, messages: [...c.messages, { from: 'sys', text: outcome === 'success' ? 'You marked this a successful connection.' : "You marked this: didn’t work out." }] } } };
+      return { ...p, conversations: { ...p.conversations, [convId]: { ...c, outcome, messages: [...c.messages, { from: 'sys', text: outcome === 'success' ? 'You marked this a successful connection.' : "You marked this: didn't work out." }] } } };
     });
     addToast(outcome === 'success' ? '✔️' : '👋', outcome === 'success' ? 'Nice — marked as a successful connection!' : 'Marked. Onward to the next one!');
   };
@@ -359,7 +359,7 @@ function App() {
             );
             if (key === 'profile' && profileUser && profileMin) return (
               <div key="profile" className="fm-dock-chip" onClick={() => { setProfileMin(false); dockRemove('profile'); }}>
-                <Hug size={14} /><span className="ellip">{profileUser}{'’'}s profile</span>
+                <Hug size={14} /><span className="ellip">{profileUser}{'''}s profile</span>
                 <button className="x" onClick={(e) => { e.stopPropagation(); setProfileUser(null); setProfileMin(false); dockRemove('profile'); }}>{'×'}</button>
               </div>
             );
