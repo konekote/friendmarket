@@ -115,14 +115,12 @@ function App() {
   };
 
   const onDeleteAccount = async () => {
-    await window.FM_SB.auth.admin ? null : null; // admin not available client-side
     const { error } = await window.FM_SB.rpc('delete_user');
-    // whether or not rpc exists, sign out and clear state
+    addToast('👋', "Your account has been deleted.");
     await window.FM_SB.auth.signOut();
-    setToasts([]); setMinChats([]); setReachTopic(null); setReachMin(false);
+    setMinChats([]); setReachTopic(null); setReachMin(false);
     setComposeOpen(false); setComposeMin(false); setProfileUser(null); setProfileMin(false); setDockOrder([]);
     setS((p) => ({ ...p, account: null, view: 'browse' }));
-    addToast('👋', "Your account has been deleted.");
   };
 
   // restore session on load + listen for sign-out
@@ -282,6 +280,9 @@ function App() {
       <div className="fmw fm-desktop" data-theme={resolvedDark ? 'dark' : 'light'}>
         <ThemeToggle theme={theme} onChange={setTheme} />
         <AuthScreen onAuth={onAuth} />
+        <div className="fm-toasts">
+          {toasts.map((t) => <div key={t.id} className="fm-toast"><span>{t.ic}</span><span>{t.text}</span></div>)}
+        </div>
       </div>
     );
   }
