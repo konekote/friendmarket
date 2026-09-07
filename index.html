@@ -359,7 +359,7 @@ function App() {
             );
             if (key === 'profile' && profileUser && profileMin) return (
               <div key="profile" className="fm-dock-chip" onClick={() => { setProfileMin(false); dockRemove('profile'); }}>
-                <Hug size={14} /><span className="ellip">{profileUser}{'''}s profile</span>
+                <Hug size={14} /><span className="ellip">{profileUser + "'s profile"}</span>
                 <button className="x" onClick={(e) => { e.stopPropagation(); setProfileUser(null); setProfileMin(false); dockRemove('profile'); }}>{'×'}</button>
               </div>
             );
