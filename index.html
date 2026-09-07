@@ -145,8 +145,7 @@ function App() {
       topics: [{ id, name: p.account.username, presence: p.account.presence, status: p.account.status, title: t.title, desc: t.desc, format: t.format, category: t.category, replies: 0, ts: Date.now(), mine: true }, ...p.topics],
     }));
     setRecentMine((m) => [id, ...m]);
-    patch((p) => ({ ...p, view: 'browse' }));
-    addToast('📬', "Your topic is live — it’s at the top of Browse.");
+    addToast(‘📬’, "Your topic is live — it’s at the top of Browse.");
   };
 
   // ---- reach out ----
