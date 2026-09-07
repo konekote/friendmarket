@@ -602,10 +602,11 @@ function ChatsScreen({ requests, conversations, tab, setTab, onAccept, onDelete,
 }
 
 // ---------- PROFILE ----------
-function ProfileScreen({ account, topics, conversations, onReach, onDelete, theme, onSetTheme, onLogout }) {
+function ProfileScreen({ account, topics, conversations, onReach, onDelete, theme, onSetTheme, onLogout, onDeleteAccount }) {
   const mine = topics.filter((t) => t.mine);
   const convs = Object.values(conversations);
   const success = convs.filter((c) => c.outcome === 'success').length;
+  const [confirmDeleteAccount, setConfirmDeleteAccount] = React.useState(false);
   return (
     <div className="fm-body">
       <div className="fm-scroll">
@@ -645,14 +646,30 @@ function ProfileScreen({ account, topics, conversations, onReach, onDelete, them
               <div className="fm-appearance-title">Log out</div>
               <div className="fm-appearance-sub">Sign out of FriendMarket on this device.</div>
             </div>
-            <button className="fm-btn fm-btn--danger" onClick={onLogout}>Log out</button>
+            <button type="button" className="fm-btn fm-btn--danger" onClick={onLogout}>Log out</button>
+          </div>
+        </div>
+        <div className="fm-section">
+          <div className="fm-appearance">
+            <div>
+              <div className="fm-appearance-title">Delete account</div>
+              <div className="fm-appearance-sub">Permanently remove your account and all your data.</div>
+            </div>
+            <button type="button" className="fm-btn fm-btn--ghost fm-btn--danger" onClick={() => setConfirmDeleteAccount(true)}>Delete account</button>
           </div>
         </div>
         <div className="fm-section"><h3>Your topics</h3></div>
-        <PagedList items={mine} perPage={FM_PER_PAGE} containerClass="fm-feed" resetKey="mine"
-          empty={<div className="fm-empty" style={{ padding: 20 }}>You haven't posted a topic yet — try the Browse tab.</div>}
+        <PagedList items={mine} perPage={5} containerClass="fm-feed" resetKey="mine"
+          empty={<div className="fm-empty" style={{ padding: 20 }}>You haven't posted a topic yet.</div>}
           render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach || (() => {})} onDelete={onDelete} />} />
       </div>
+      {confirmDeleteAccount && (
+        <ConfirmModal
+          message="This will permanently delete your account and all your data. This cannot be undone."
+          confirmLabel="Delete account"
+          onConfirm={() => { setConfirmDeleteAccount(false); onDeleteAccount(); }}
+          onCancel={() => setConfirmDeleteAccount(false)} />
+      )}
     </div>
   );
 }

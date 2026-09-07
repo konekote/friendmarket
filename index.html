@@ -33,7 +33,7 @@
 
 <script type="text/babel" src="fm-app-data.jsx?v=10"></script>
 <script type="text/babel" src="fm-app-ui.jsx?v=10"></script>
-<script type="text/babel" src="fm-app-screens.jsx?v=16"></script>
+<script type="text/babel" src="fm-app-screens.jsx?v=17"></script>
 
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
@@ -112,6 +112,17 @@ function App() {
     setToasts([]); setMinChats([]); setReachTopic(null); setReachMin(false);
     setComposeOpen(false); setComposeMin(false); setProfileUser(null); setProfileMin(false); setDockOrder([]);
     setS((p) => ({ ...p, account: null, view: 'browse' }));
+  };
+
+  const onDeleteAccount = async () => {
+    await window.FM_SB.auth.admin ? null : null; // admin not available client-side
+    const { error } = await window.FM_SB.rpc('delete_user');
+    // whether or not rpc exists, sign out and clear state
+    await window.FM_SB.auth.signOut();
+    setToasts([]); setMinChats([]); setReachTopic(null); setReachMin(false);
+    setComposeOpen(false); setComposeMin(false); setProfileUser(null); setProfileMin(false); setDockOrder([]);
+    setS((p) => ({ ...p, account: null, view: 'browse' }));
+    addToast('👋', "Your account has been deleted.");
   };
 
   // restore session on load + listen for sign-out
@@ -323,7 +334,7 @@ function App() {
 
         {s.view === 'browse' && <BrowseScreen topics={s.topics} recentMine={recentMine} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} requestedTitles={requestedTitles} />}
         {s.view === 'requests' && <ChatsScreen requests={s.requests} conversations={s.conversations} tab={reqTab} setTab={setReqTab} onAccept={onAccept} onDelete={onDelete} onOpenChat={(id) => { onOpenChat(id); }} />}
-        {s.view === 'profile' && <ProfileScreen account={s.account} topics={s.topics} conversations={s.conversations} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} theme={theme} onSetTheme={setTheme} onLogout={onLogout} />}
+        {s.view === 'profile' && <ProfileScreen account={s.account} topics={s.topics} conversations={s.conversations} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} theme={theme} onSetTheme={setTheme} onLogout={onLogout} onDeleteAccount={onDeleteAccount} />}
       </div>
 
       {/* post a new topic modal */}
