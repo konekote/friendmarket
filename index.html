@@ -33,7 +33,7 @@
 
 <script type="text/babel" src="fm-app-data.jsx?v=10"></script>
 <script type="text/babel" src="fm-app-ui.jsx?v=10"></script>
-<script type="text/babel" src="fm-app-screens.jsx?v=19"></script>
+<script type="text/babel" src="fm-app-screens.jsx?v=20"></script>
 
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
@@ -140,7 +140,14 @@ function App() {
   }, []);
 
   // ---- presence / status ----
-  const onSetStatus = (status) => patch((p) => ({ ...p, account: { ...p.account, status } }));
+  const onSetStatus = (status) => {
+    patch((p) => ({
+      ...p,
+      account: { ...p.account, status },
+      topics: p.topics.map((t) => t.mine ? { ...t, status } : t),
+    }));
+    window.FM_SB.auth.updateUser({ data: { status } });
+  };
   const onSetPresence = (presence) => patch((p) => ({ ...p, account: { ...p.account, presence } }));
 
   // ---- delete own topic ----

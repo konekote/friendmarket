@@ -652,7 +652,7 @@ function ProfileScreen({ account, topics, conversations, onReach, onDelete, them
         <div className="fm-section"><h3>Your topics</h3></div>
         <PagedList items={mine} perPage={5} containerClass="fm-feed" resetKey="mine"
           empty={<div className="fm-empty" style={{ padding: 20 }}>You haven't posted a topic yet.</div>}
-          render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach || (() => {})} onDelete={onDelete} />} />
+          render={(t) => <TopicRow key={t.id} topic={{ ...t, status: account.status }} onReach={onReach || (() => {})} onDelete={onDelete} />} />
         <div className="fm-section fm-section--danger">
           <div className="fm-appearance fm-appearance--danger">
             <div>
