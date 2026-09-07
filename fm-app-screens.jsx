@@ -711,17 +711,19 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
           </div>
 
           <div className="fm-up-section">{isMe ? 'Your topics' : 'Topics ' + name + ' posted'}</div>
-          {theirTopics.length === 0 ? (
-            <div className="fm-empty" style={{ padding: '14px 4px' }}>No open topics right now.</div>
-          ) : (
-            <div className="fm-feed" style={{ padding: '4px 0 2px' }}>
-              {theirTopics.map((t) => (
-                <TopicRow key={t.id} topic={isMe ? { ...t, mine: true } : t}
-                  requested={requestedTitles && requestedTitles.has(t.title)}
-                  onReach={(tp) => { onClose(); onReach(tp); }} />
-              ))}
-            </div>
-          )}
+          <div className="fm-up-topics-scroll">
+            {theirTopics.length === 0 ? (
+              <div className="fm-empty" style={{ padding: '14px 4px' }}>No open topics right now.</div>
+            ) : (
+              <div className="fm-feed" style={{ padding: '4px 0 2px' }}>
+                {theirTopics.map((t) => (
+                  <TopicRow key={t.id} topic={isMe ? { ...t, mine: true } : t}
+                    requested={requestedTitles && requestedTitles.has(t.title)}
+                    onReach={(tp) => { onClose(); onReach(tp); }} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

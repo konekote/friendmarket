@@ -381,6 +381,7 @@
 .fm-up-status { margin-top: 3px; font-size: var(--fs-meta); font-style: italic; color: var(--muted); }
 .fm-up-stats { display: flex; justify-content: center; gap: 40px; padding: 4px 4px 16px; border-bottom: 1px solid var(--line); }
 .fm-up-section { font-size: 13px; font-weight: 700; color: var(--ink); padding: 14px 2px 2px; }
+.fm-up-topics-scroll { max-height: 280px; overflow-y: auto; }
 
 /* topic cards inside the profile popup use the compact (stacked) layout so they don't crowd */
 .fm-userprofile .fm-row { grid-template-columns: auto 1fr; }
