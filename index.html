@@ -118,9 +118,10 @@ function App() {
     const { error } = await window.FM_SB.rpc('delete_user');
     addToast('👋', "Your account has been deleted.");
     await window.FM_SB.auth.signOut();
+    localStorage.removeItem(window.FM_STORE_KEY);
     setMinChats([]); setReachTopic(null); setReachMin(false);
     setComposeOpen(false); setComposeMin(false); setProfileUser(null); setProfileMin(false); setDockOrder([]);
-    setS((p) => ({ ...p, account: null, view: 'browse' }));
+    setS({ ...window.fmLoad(), account: null, view: 'browse' });
   };
 
   // restore session on load + listen for sign-out
