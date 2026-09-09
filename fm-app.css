@@ -384,9 +384,9 @@
 .fm-up-topics-scroll { max-height: 280px; overflow-y: auto; }
 
 /* topic cards inside the profile popup use the compact (stacked) layout so they don't crowd */
-.fm-userprofile .fm-row { grid-template-columns: auto 1fr; }
+.fm-userprofile .fm-row { grid-template-columns: auto 1fr; row-gap: 4px; }
 .fm-userprofile .fm-body-c { display: flex; flex-direction: column; justify-content: center; }
-.fm-userprofile .fm-cta { grid-column: 1 / -1; justify-self: stretch; margin-top: 6px; }
+.fm-userprofile .fm-cta { grid-column: 1 / -1; justify-self: stretch; margin-top: 0; }
 .fm-userprofile .fm-cta.fm-btn { width: 100%; }
 .fm-userprofile .fm-im-side .fm-badge { display: inline-flex; }
 .fm-userprofile .fm-im-time { display: block; }
