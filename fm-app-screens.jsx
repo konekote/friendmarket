@@ -162,6 +162,12 @@ function AuthScreen({ onAuth }) {
           </div>
         ) : (
           <React.Fragment>
+            {window.location.hostname === 'localhost' && (
+              <button type="button" className="fm-btn fm-btn--primary" style={{ marginBottom: 12, width: '100%', background: '#1e3a1e', borderColor: '#2d6a2d', color: '#6fcf6f' }}
+                onClick={() => onAuth({ username: 'demo_user', email: 'demo@localhost', presence: 'online', status: 'just testing things' })}>
+                Demo login (localhost only)
+              </button>
+            )}
             <div className="fm-tabs">
               <button className={mode === 'register' ? 'is-on' : ''} onClick={() => { setMode('register'); setErr(''); }}>Create account</button>
               <button className={mode === 'signin' ? 'is-on' : ''} onClick={() => { setMode('signin'); setErr(''); }}>Sign in</button>
