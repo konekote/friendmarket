@@ -43,7 +43,8 @@ function App() {
   const [reachTopic, setReachTopic] = useState(null);
   const [reachMin, setReachMin] = useState(false);
   const [minChats, setMinChats] = useState([]); // minimized chat conv ids
-  const [reqTab, setReqTab] = useState('incoming');
+  const [reqTab, setReqTab] = useState(() => localStorage.getItem('friendmarket:reqTab') || 'incoming');
+  useEffect(() => { localStorage.setItem('friendmarket:reqTab', reqTab); }, [reqTab]);
   const [composeOpen, setComposeOpen] = useState(false);
   const [composeMin, setComposeMin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
