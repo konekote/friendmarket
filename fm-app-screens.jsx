@@ -557,7 +557,7 @@ function ChatCard({ c, onOpenChat, past }) {
 
 function ChatsScreen({ requests, conversations, tab, setTab, onAccept, onDelete, onOpenChat }) {
   const incoming = requests.filter((r) => r.dir === 'incoming' && r.status === 'pending');
-  const sent = requests.filter((r) => r.dir === 'outgoing');
+  const sent = requests.filter((r) => r.dir === 'outgoing' && r.status === 'pending');
   const convs = Object.values(conversations);
   const active = convs.filter((c) => !c.outcome);
   const past = convs.filter((c) => c.outcome);

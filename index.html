@@ -31,9 +31,9 @@
   );
 </script>
 
-<script type="text/babel" src="fm-app-data.jsx?v=14"></script>
+<script type="text/babel" src="fm-app-data.jsx?v=16"></script>
 <script type="text/babel" src="fm-app-ui.jsx?v=10"></script>
-<script type="text/babel" src="fm-app-screens.jsx?v=34"></script>
+<script type="text/babel" src="fm-app-screens.jsx?v=35"></script>
 
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
@@ -192,7 +192,7 @@ function App() {
     patch((p) => ({
       ...p,
       topics: p.topics.map((t) => t.id === topic.id ? { ...t, replies: (t.replies || 0) + 1 } : t),
-      requests: [{ id: reqId, dir: 'outgoing', name: topic.name, presence: topic.presence, topicTitle: topic.title, category: topic.category, format: topic.format, message, also, status: 'pending' }, ...p.requests],
+      requests: [{ id: reqId, dir: 'outgoing', name: topic.name, presence: topic.presence, topicTitle: topic.title, category: topic.category, format: topic.format, message, also, status: 'pending', ts: Date.now() }, ...p.requests],
     }));
     addToast('↗️', 'Request sent to ' + topic.name + '. Hang tight!');
     // simulate them accepting
@@ -211,6 +211,7 @@ function App() {
           openChats: openChat(p, convId),
         };
       });
+      setReqTab('active');
       addToast('🫂', topic.name + ' accepted your request! Say hi.');
     }, 2600);
   };

@@ -23,6 +23,7 @@ const FM_DAY = 86400000;
 window.FM_MAX_DAYS = 10;
 window.fmDaysAgo = (ts) => Math.floor((Date.now() - ts) / FM_DAY);
 window.fmTimeLabel = (ts) => {
+  if (!ts) return 'today';
   const d = window.fmDaysAgo(ts);
   if (d <= 0) return 'today';
   if (d === 1) return 'yesterday';
