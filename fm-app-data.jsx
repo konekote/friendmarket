@@ -83,6 +83,7 @@ window.fmSeed = function () {
   return {
     account: null, // { username, email, presence, status }
     view: 'browse',
+    blocked: [],
     topics: [
       { id: 'dp1', name: 'dusk_pilot', presence: 'online', status: 'perpetually between timezones', title: 'Anyone moved abroad alone? How was month 1?', desc: 'Just landed in a new country with two suitcases and a lot of questions. Would love to compare notes with others who have done this.', format: 'written', category: 'Lifestyle', replies: 4, ts: daysBack(0), mine: false },
       { id: 'dp2', name: 'dusk_pilot', presence: 'online', status: 'perpetually between timezones', title: 'Favorite city for solo travel that felt totally safe?', desc: 'Not looking for adventure — looking for ease. Walkable, friendly, good food. Tell me where you felt immediately at home.', format: 'written', category: 'Travel', replies: 7, ts: daysBack(1), mine: false },
@@ -143,7 +144,7 @@ window.FM_REPLIES = [
 ];
 
 // ---- persistence ----
-window.FM_STORE_KEY = 'friendmarket:proto:v11';
+window.FM_STORE_KEY = 'friendmarket:proto:v12';
 window.fmLoad = function () {
   try { const raw = localStorage.getItem(window.FM_STORE_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
   return window.fmSeed();

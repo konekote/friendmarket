@@ -31,9 +31,9 @@
   );
 </script>
 
-<script type="text/babel" src="fm-app-data.jsx?v=13"></script>
+<script type="text/babel" src="fm-app-data.jsx?v=14"></script>
 <script type="text/babel" src="fm-app-ui.jsx?v=10"></script>
-<script type="text/babel" src="fm-app-screens.jsx?v=25"></script>
+<script type="text/babel" src="fm-app-screens.jsx?v=34"></script>
 
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
@@ -59,6 +59,23 @@ function App() {
   const [confirmDelete, setConfirmDelete] = useState(null); // topic id pending deletion
   const [theme, setTheme] = useState(() => localStorage.getItem('friendmarket:theme') || 'auto');
   const toastTimers = useRef({});
+
+  // ---- block / unblock ----
+  const onBlock = (name) => {
+    const theirConvIds = Object.values(s.conversations).filter((c) => c.name === name).map((c) => c.id);
+    patch((p) => ({
+      ...p,
+      blocked: [...(p.blocked || []), name],
+      openChats: p.openChats.filter((id) => !theirConvIds.includes(id)),
+    }));
+    theirConvIds.forEach((id) => { setMinChats((m) => m.filter((c) => c !== id)); dockRemove('chat:' + id); });
+    setProfileUser(null); setProfileMin(false); dockRemove('profile');
+    addToast('🚫', name + ' has been blocked.');
+  };
+  const onUnblock = (name) => {
+    patch((p) => ({ ...p, blocked: (p.blocked || []).filter((b) => b !== name) }));
+    addToast('✅', name + ' has been unblocked.');
+  };
 
   // resolve theme (auto follows system) -> data-theme on root
   const [systemDark, setSystemDark] = useState(() => window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -295,9 +312,14 @@ function App() {
     );
   }
 
-  const pendingIncoming = s.requests.filter((r) => r.dir === 'incoming' && r.status === 'pending').length;
-  const requestedTitles = new Set(s.requests.filter((r) => r.dir === 'outgoing').map((r) => r.topicTitle));
-  const openChatIds = s.openChats.filter((id) => s.conversations[id]);
+  const blocked = s.blocked || [];
+  const visibleTopics = s.topics.filter((t) => t.mine || !blocked.includes(t.name));
+  const visibleRequests = s.requests.filter((r) => !blocked.includes(r.name));
+  const visibleConversations = Object.fromEntries(Object.entries(s.conversations).filter(([, c]) => !blocked.includes(c.name)));
+
+  const pendingIncoming = visibleRequests.filter((r) => r.dir === 'incoming' && r.status === 'pending').length;
+  const requestedTitles = new Set(visibleRequests.filter((r) => r.dir === 'outgoing').map((r) => r.topicTitle));
+  const openChatIds = s.openChats.filter((id) => visibleConversations[id]);
 
   return (
     <div className="fmw fm-desktop" data-theme={resolvedDark ? 'dark' : 'light'}>
@@ -341,9 +363,9 @@ function App() {
         </div>
         <MeBar account={s.account} onSetStatus={onSetStatus} onSetPresence={onSetPresence} />
 
-        {s.view === 'browse' && <BrowseScreen topics={s.topics} recentMine={recentMine} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} requestedTitles={requestedTitles} />}
-        {s.view === 'requests' && <ChatsScreen requests={s.requests} conversations={s.conversations} tab={reqTab} setTab={setReqTab} onAccept={onAccept} onDelete={onDelete} onOpenChat={(id) => { onOpenChat(id); }} />}
-        {s.view === 'profile' && <ProfileScreen account={s.account} topics={s.topics} conversations={s.conversations} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} theme={theme} onSetTheme={setTheme} onLogout={onLogout} onDeleteAccount={onDeleteAccount} />}
+        {s.view === 'browse' && <BrowseScreen topics={visibleTopics} recentMine={recentMine} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} requestedTitles={requestedTitles} />}
+        {s.view === 'requests' && <ChatsScreen requests={visibleRequests} conversations={visibleConversations} tab={reqTab} setTab={setReqTab} onAccept={onAccept} onDelete={onDelete} onOpenChat={(id) => { onOpenChat(id); }} />}
+        {s.view === 'profile' && <ProfileScreen account={s.account} topics={s.topics} conversations={visibleConversations} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} theme={theme} onSetTheme={setTheme} onLogout={onLogout} onDeleteAccount={onDeleteAccount} blocked={blocked} onUnblock={onUnblock} />}
       </div>
 
       {/* post a new topic modal */}
@@ -351,14 +373,15 @@ function App() {
         onMinimize={() => { setComposeMin(true); dockAdd('compose'); }} onClose={() => { setComposeOpen(false); setComposeMin(false); dockRemove('compose'); }} />}
 
       {/* a user's profile (opened by tapping their name) */}
-      {profileUser && <UserProfileModal name={profileUser} topics={s.topics} requests={s.requests}
-        conversations={s.conversations} account={s.account} requestedTitles={requestedTitles} hidden={profileMin}
+      {profileUser && <UserProfileModal name={profileUser} topics={s.topics} requests={visibleRequests}
+        conversations={visibleConversations} account={s.account} requestedTitles={requestedTitles} hidden={profileMin}
+        blocked={blocked} onBlock={onBlock}
         onMinimize={() => { setProfileMin(true); dockAdd('profile'); }}
         onReach={(t) => { setReachTopic(t); setReachMin(false); }} onClose={() => { setProfileUser(null); setProfileMin(false); dockRemove('profile'); }} />}
 
       {/* chat windows (minimized ones stay mounted but hidden) */}
       {openChatIds.map((id, i) => (
-        <ChatWindow key={id} conv={s.conversations[id]} myName={s.account.username} index={i}
+        <ChatWindow key={id} conv={visibleConversations[id]} myName={s.account.username} index={i}
           minimized={minChats.includes(id)}
           onMinimize={onMinChat} onClose={onCloseChat} onSend={onSendMessage} onMark={onMark} />
       ))}
@@ -394,8 +417,8 @@ function App() {
               if (!minChats.includes(id) || !openChatIds.includes(id)) return null;
               return (
                 <div key={key} className="fm-dock-chip" onClick={() => onRestoreChat(id)}>
-                  <span className={'fm-dot fm-dot--' + s.conversations[id].presence}></span>
-                  <span className="ellip">{s.conversations[id].name}</span>
+                  <span className={'fm-dot fm-dot--' + (visibleConversations[id] || {}).presence}></span>
+                  <span className="ellip">{(visibleConversations[id] || {}).name}</span>
                   <button className="x" onClick={(e) => { e.stopPropagation(); onCloseChat(id); }}>{'×'}</button>
                 </div>
               );

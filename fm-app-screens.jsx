@@ -608,11 +608,13 @@ function ChatsScreen({ requests, conversations, tab, setTab, onAccept, onDelete,
 }
 
 // ---------- PROFILE ----------
-function ProfileScreen({ account, topics, conversations, onReach, onDelete, theme, onSetTheme, onLogout, onDeleteAccount }) {
+function ProfileScreen({ account, topics, conversations, onReach, onDelete, theme, onSetTheme, onLogout, onDeleteAccount, blocked, onUnblock }) {
   const mine = topics.filter((t) => t.mine);
   const convs = Object.values(conversations);
   const success = convs.filter((c) => c.outcome === 'success').length;
   const [confirmDeleteAccount, setConfirmDeleteAccount] = React.useState(false);
+  const [blockedOpen, setBlockedOpen] = React.useState(false);
+  const blockedList = blocked || [];
   return (
     <div className="fm-body">
       <div className="fm-scroll">
@@ -649,6 +651,20 @@ function ProfileScreen({ account, topics, conversations, onReach, onDelete, them
         <PagedList items={mine} perPage={5} containerClass="fm-feed" resetKey="mine"
           empty={<div className="fm-empty" style={{ padding: 20 }}>You haven't posted a topic yet.</div>}
           render={(t) => <TopicRow key={t.id} topic={{ ...t, status: account.status }} onReach={onReach || (() => {})} onDelete={onDelete} />} />
+        {blockedList.length > 0 && (
+          <>
+            <div className="fm-section"><h3>Blocked users</h3></div>
+            <div className="fm-section">
+              <div className="fm-appearance">
+                <div>
+                  <div className="fm-appearance-title">Blocked users</div>
+                  <div className="fm-appearance-sub">{blockedList.length} {blockedList.length === 1 ? 'person' : 'people'} blocked</div>
+                </div>
+                <button type="button" className="fm-btn" onClick={() => setBlockedOpen(true)}>View</button>
+              </div>
+            </div>
+          </>
+        )}
         <div className="fm-section fm-section--danger">
           <div className="fm-appearance fm-appearance--danger">
             <div>
@@ -666,9 +682,36 @@ function ProfileScreen({ account, topics, conversations, onReach, onDelete, them
           onConfirm={() => { setConfirmDeleteAccount(false); onDeleteAccount(); }}
           onCancel={() => setConfirmDeleteAccount(false)} />
       )}
+      {blockedOpen && (
+        <BlockedUsersModal blocked={blockedList} onUnblock={(name) => { if (blockedList.length === 1) setBlockedOpen(false); onUnblock && onUnblock(name); }} onClose={() => setBlockedOpen(false)} />
+      )}
     </div>
   );
 }
+
+function BlockedUsersModal({ blocked, onUnblock, onClose }) {
+  return (
+    <div className="fm-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="fm-modal fm-win" style={{ maxWidth: 360 }}>
+        <div className="fm-titlebar">
+          <span className="fm-tb-title"><Hug size={15} /> Blocked users</span>
+          <WinButtons variant="popup" onClose={onClose} />
+        </div>
+        <div className="fm-modal-body" style={{ padding: 0 }}>
+          <div style={{ maxHeight: 360, overflowY: 'auto', padding: '8px 16px' }}>
+            {blocked.map((name, i) => (
+              <div key={name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderTop: i > 0 ? '1px solid var(--line)' : 'none' }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: window.fmColorFor(name) }}>{name}</span>
+                <button type="button" className="fm-btn" onClick={() => onUnblock && onUnblock(name)}>Unblock</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Stat({ n, label }) {
   return (
     <div style={{ textAlign: 'center' }}>
@@ -679,8 +722,7 @@ function Stat({ n, label }) {
 }
 
 // ---------- USER PROFILE (someone else's) ----------
-function UserProfileModal({ name, topics, requests, conversations, account, requestedTitles, onReach, onClose, hidden, onMinimize }) {
-  // gather what we know about this person from the seed data
+function UserProfileModal({ name, topics, requests, conversations, account, requestedTitles, onReach, onClose, hidden, onMinimize, blocked, onBlock }) {
   const isMe = account && account.username === name;
   const theirTopics = topics.filter((t) => t.name === name && (isMe || !t.mine));
   const fromTopic = topics.find((t) => t.name === name);
@@ -689,6 +731,7 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
   const presence = (fromTopic && fromTopic.presence) || (fromReq && fromReq.presence) || (fromConv && fromConv.presence) || 'offline';
   const status = isMe ? (account.status || '') : ((fromTopic && fromTopic.status) || (fromReq && fromReq.senderStatus) || '');
   const convCount = Object.values(conversations).filter((c) => c.name === name).length;
+  const [confirmBlock, setConfirmBlock] = React.useState(false);
 
   return (
     <div className={'fm-backdrop' + (hidden ? ' is-hidden' : '')} onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
@@ -727,7 +770,22 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
                 )} />
             )}
           </div>
+          {!isMe && (
+            <div style={{ borderTop: '1px solid var(--border)', marginTop: 8, paddingTop: 10, display: 'flex', justifyContent: 'flex-end' }}>
+              <button type="button" className="fm-btn fm-btn--danger" style={{ fontSize: 12 }}
+                onClick={() => setConfirmBlock(true)}>
+                Block {name}
+              </button>
+            </div>
+          )}
         </div>
+        {confirmBlock && (
+          <ConfirmModal
+            message={'Block ' + name + '? Their topics and conversations will be hidden. You can unblock them from My Account.'}
+            confirmLabel={'Block ' + name}
+            onConfirm={() => { setConfirmBlock(false); onBlock && onBlock(name); }}
+            onCancel={() => setConfirmBlock(false)} />
+        )}
       </div>
     </div>
   );
