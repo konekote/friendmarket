@@ -35,28 +35,28 @@ const hrsBack = (h) => Date.now() - h * 3600000;
 // ---- seed ----
 window.fmSeed = function () {
   // helper: a finished/active conversation
-  const conv = (id, name, presence, topicTitle, outcome) => ({
+  const conv = (id, name, presence, topicTitle, outcome, daysAgo) => ({
     id, name, presence, topicTitle, outcome,
     messages: [
-      { from: name, text: 'hey! thanks for chatting about ' + topicTitle.toLowerCase().replace(/[?.!]+$/, '') + ' :)', mine: false },
-      { from: 'me', text: 'likewise — that was a good one!', mine: true },
+      { from: name, text: 'hey! thanks for chatting about ' + topicTitle.toLowerCase().replace(/[?.!]+$/, '') + ' :)', mine: false, ts: daysBack(daysAgo) },
+      { from: 'me', text: 'likewise — that was a good one!', mine: true, ts: daysBack(daysAgo) },
     ],
   });
 
   // past chats (enough to paginate at 10/page)
   const pastDefs = [
-    ['reverb_kid', 'away', 'Trade dream-pop & shoegaze deep cuts', 'success'],
-    ['paws_and_reflect', 'online', 'Adopting a senior cat', 'success'],
-    ['neon_moth', 'online', 'Late-night city photography', 'no'],
-    ['crt_glow', 'away', 'Restoring old CRT TVs', 'success'],
-    ['dial_tone', 'online', 'The lost art of the mixtape', 'success'],
-    ['vellum_void', 'away', 'Favorite fountain pens', 'no'],
-    ['soft_static', 'online', 'Ambient albums to fall asleep to', 'success'],
-    ['gilded_gif', 'online', 'Pixel art starter tips', 'success'],
-    ['modem_hymn', 'away', 'BBS nostalgia', 'no'],
-    ['byte_betty', 'online', 'Speedrunning for beginners', 'success'],
-    ['tape_hiss', 'away', 'Cassette culture revival', 'success'],
-    ['ferro_fluid', 'online', 'Desk-toy obsessions', 'no'],
+    ['reverb_kid', 'away', 'Trade dream-pop & shoegaze deep cuts', 'success', 1],
+    ['paws_and_reflect', 'online', 'Adopting a senior cat', 'success', 2],
+    ['neon_moth', 'online', 'Late-night city photography', 'no', 3],
+    ['crt_glow', 'away', 'Restoring old CRT TVs', 'success', 5],
+    ['dial_tone', 'online', 'The lost art of the mixtape', 'success', 7],
+    ['vellum_void', 'away', 'Favorite fountain pens', 'no', 9],
+    ['soft_static', 'online', 'Ambient albums to fall asleep to', 'success', 12],
+    ['gilded_gif', 'online', 'Pixel art starter tips', 'success', 14],
+    ['modem_hymn', 'away', 'BBS nostalgia', 'no', 18],
+    ['byte_betty', 'online', 'Speedrunning for beginners', 'success', 21],
+    ['tape_hiss', 'away', 'Cassette culture revival', 'success', 25],
+    ['ferro_fluid', 'online', 'Desk-toy obsessions', 'no', 30],
   ];
 
   const conversations = {
@@ -64,22 +64,22 @@ window.fmSeed = function () {
     cv0: {
       id: 'cv0', name: 'blue_swirl', presence: 'online', topicTitle: 'Is the Dreamcast underrated?', outcome: null,
       messages: [
-        { from: 'blue_swirl', text: 'heyy thanks for accepting! so. the Dreamcast.', mine: false },
-        { from: 'blue_swirl', text: 'underrated or MOST underrated, no in between', mine: false },
-        { from: 'me', text: "lol ok i'm listening. sell me on the VMU", mine: true },
+        { from: 'blue_swirl', text: 'heyy thanks for accepting! so. the Dreamcast.', mine: false, ts: hrsBack(5) },
+        { from: 'blue_swirl', text: 'underrated or MOST underrated, no in between', mine: false, ts: hrsBack(5) },
+        { from: 'me', text: "lol ok i'm listening. sell me on the VMU", mine: true, ts: hrsBack(1) },
       ],
     },
     cva: { id: 'cva', name: 'midori_tron', presence: 'away', topicTitle: 'Practicing conversational Japanese', outcome: null, unread: 2, messages: [
-      { from: 'me', text: 'hi! happy to go slow. want to start with self-intros?', mine: true },
-      { from: 'midori_tron', text: 'yes! よろしく おねがいします ～', mine: false },
-      { from: 'midori_tron', text: 'should we pick a time to do a quick call this week?', mine: false },
+      { from: 'me', text: 'hi! happy to go slow. want to start with self-intros?', mine: true, ts: hrsBack(4) },
+      { from: 'midori_tron', text: 'yes! よろしく おねがいします ～', mine: false, ts: hrsBack(3) },
+      { from: 'midori_tron', text: 'should we pick a time to do a quick call this week?', mine: false, ts: hrsBack(2) },
     ] },
     cvb: { id: 'cvb', name: 'fern_gully', presence: 'online', topicTitle: 'First-time houseplant panic', outcome: null, unread: 1, messages: [
-      { from: 'me', text: 'ok deep breath — how often are you watering it?', mine: true },
-      { from: 'fern_gully', text: "maybe… every other day? is that bad? that's bad isn't it", mine: false },
+      { from: 'me', text: 'ok deep breath — how often are you watering it?', mine: true, ts: hrsBack(6) },
+      { from: 'fern_gully', text: "maybe… every other day? is that bad? that's bad isn't it", mine: false, ts: hrsBack(0) },
     ] },
   };
-  pastDefs.forEach((d, i) => { conversations['cp' + i] = conv('cp' + i, d[0], d[1], d[2], d[3]); });
+  pastDefs.forEach((d, i) => { conversations['cp' + i] = conv('cp' + i, d[0], d[1], d[2], d[3], d[4]); });
 
   return {
     account: null, // { username, email, presence, status }
@@ -145,7 +145,7 @@ window.FM_REPLIES = [
 ];
 
 // ---- persistence ----
-window.FM_STORE_KEY = 'friendmarket:proto:v12';
+window.FM_STORE_KEY = 'friendmarket:proto:v13';
 window.fmLoad = function () {
   try { const raw = localStorage.getItem(window.FM_STORE_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
   return window.fmSeed();

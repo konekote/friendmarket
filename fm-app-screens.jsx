@@ -534,6 +534,7 @@ function ChatCard({ c, onOpenChat, past }) {
         <div className="fm-meta fm-meta--wrap">
           <IDot presence={c.presence} />
           <UserName name={c.name} />
+          {last && last.ts && <span className="fm-time">{window.fmTimeLabel(last.ts)}</span>}
           {unread && <span className="fm-unread-badge">{c.unread} new {c.unread === 1 ? 'reply' : 'replies'}</span>}
           {c.outcome === 'success' && <span className="fm-status-pill fm-status-pill--accepted">{'✔'} connected</span>}
           {c.outcome === 'no' && <span className="fm-status-pill fm-status-pill--declined">didn't work out</span>}
@@ -559,8 +560,14 @@ function ChatsScreen({ requests, conversations, tab, setTab, onAccept, onDelete,
   const incoming = requests.filter((r) => r.dir === 'incoming' && r.status === 'pending');
   const sent = requests.filter((r) => r.dir === 'outgoing' && r.status === 'pending');
   const convs = Object.values(conversations);
-  const active = convs.filter((c) => !c.outcome);
-  const past = convs.filter((c) => c.outcome);
+  const lastTs = (c) => { const m = c.messages[c.messages.length - 1]; return (m && m.ts) || 0; };
+  const active = convs.filter((c) => !c.outcome).sort((a, b) => {
+    const unreadA = a.unread > 0 ? 1 : 0;
+    const unreadB = b.unread > 0 ? 1 : 0;
+    if (unreadB !== unreadA) return unreadB - unreadA;
+    return lastTs(b) - lastTs(a);
+  });
+  const past = convs.filter((c) => c.outcome).sort((a, b) => lastTs(b) - lastTs(a));
 
   const tabs = [
     ['incoming', 'Incoming', incoming.length],

@@ -31,9 +31,9 @@
   );
 </script>
 
-<script type="text/babel" src="fm-app-data.jsx?v=16"></script>
+<script type="text/babel" src="fm-app-data.jsx?v=17"></script>
 <script type="text/babel" src="fm-app-ui.jsx?v=10"></script>
-<script type="text/babel" src="fm-app-screens.jsx?v=35"></script>
+<script type="text/babel" src="fm-app-screens.jsx?v=37"></script>
 
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
@@ -202,7 +202,7 @@ function App() {
         if (!p.requests.some((r) => r.id === reqId)) return p;
         const conv = {
           id: convId, name: topic.name, presence: topic.presence, topicTitle: topic.title, outcome: null,
-          messages: [{ from: topic.name, text: 'hey! yes, happy to chat about ' + topic.title.toLowerCase() + ' :)', mine: false }],
+          messages: [{ from: topic.name, text: 'hey! yes, happy to chat about ' + topic.title.toLowerCase() + ' :)', mine: false, ts: Date.now() }],
         };
         return {
           ...p,
@@ -224,7 +224,7 @@ function App() {
       if (!req) return p;
       const conv = {
         id: convId, name: req.name, presence: req.presence, topicTitle: req.topicTitle, outcome: null,
-        messages: [{ from: req.name, text: 'yay, thanks for accepting! so excited to talk about ' + req.topicTitle.toLowerCase(), mine: false }],
+        messages: [{ from: req.name, text: 'yay, thanks for accepting! so excited to talk about ' + req.topicTitle.toLowerCase(), mine: false, ts: Date.now() }],
       };
       return {
         ...p,
@@ -259,14 +259,14 @@ function App() {
     patch((p) => {
       const c = p.conversations[convId];
       if (!c) return p;
-      return { ...p, conversations: { ...p.conversations, [convId]: { ...c, messages: [...c.messages, { from: 'me', text, mine: true }] } } };
+      return { ...p, conversations: { ...p.conversations, [convId]: { ...c, messages: [...c.messages, { from: 'me', text, mine: true, ts: Date.now() }] } } };
     });
     setTimeout(() => {
       patch((p) => {
         const c = p.conversations[convId];
         if (!c || c.outcome) return p;
         const reply = window.FM_REPLIES[Math.floor(Math.random() * window.FM_REPLIES.length)];
-        return { ...p, conversations: { ...p.conversations, [convId]: { ...c, messages: [...c.messages, { from: c.name, text: reply, mine: false }] } } };
+        return { ...p, conversations: { ...p.conversations, [convId]: { ...c, messages: [...c.messages, { from: c.name, text: reply, mine: false, ts: Date.now() }] } } };
       });
     }, 1200);
   };
