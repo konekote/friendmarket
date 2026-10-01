@@ -99,6 +99,16 @@ window.fmSeed = function () {
       { id: 'dp13', name: 'dusk_pilot', presence: 'online', status: 'perpetually between timezones', title: 'Thoughts on the 4-day work week — real or hype?', desc: 'My company is trialing it and I have feelings. Would love to hear from people who have actually done it longer term.', format: 'written', category: 'Lifestyle', replies: 5, ts: daysBack(16), mine: false },
       { id: 'dp14', name: 'dusk_pilot', presence: 'online', status: 'perpetually between timezones', title: 'Horror movie watch-along — slow burn preferred', desc: 'Not gore, not jump scares — give me dread. Looking for someone to watch over video call and debrief after.', format: 'video', category: 'Movies', replies: 3, ts: daysBack(19), mine: false },
       { id: 'dp15', name: 'dusk_pilot', presence: 'online', status: 'perpetually between timezones', title: 'Share your most niche hobby — no judgment', desc: "I collect train timetables from the 1970s. Your turn. The weirder the better. Let's bond over it.", format: 'written', category: 'Lifestyle', replies: 17, ts: daysBack(21), mine: false },
+      { id: 'el1', name: 'echo_loop', presence: 'away', status: 'still on page 3', title: 'Anyone up for a sci-fi book swap?', desc: 'Trading paperbacks and opinions. Currently obsessed with Ursula Le Guin. Drop your favorites and I will drop mine.', format: 'written', category: 'Books', replies: 4, ts: daysBack(0), mine: false },
+      { id: 'el2', name: 'echo_loop', presence: 'away', status: 'still on page 3', title: 'Favorite instrumental albums to focus to?', desc: 'I need a new background listen for long work sessions. Share what you put on when you need to disappear into something.', format: 'audio', category: 'Music', replies: 7, ts: daysBack(3), mine: false },
+      { id: 'el3', name: 'echo_loop', presence: 'away', status: 'still on page 3', title: 'Thoughts on minimal interior design?', desc: 'Slowly turning my apartment into something calmer. Looking for people who have done this and can share what actually worked.', format: 'written', category: 'Lifestyle', replies: 2, ts: daysBack(7), mine: false },
+      { id: 'pd1', name: 'pixel_drift', presence: 'online', status: 'making something, not sure what', title: 'Learn Figma together from scratch?', desc: 'Total beginner. Want to find someone else who is also just starting so we can figure it out without feeling behind.', format: 'video', category: 'Technology', replies: 5, ts: daysBack(1), mine: false },
+      { id: 'pd2', name: 'pixel_drift', presence: 'online', status: 'making something, not sure what', title: 'Hot takes on overrated movies — go', desc: 'Not looking for a fight. Just want to have the conversation everyone is too polite to have. I will start: Inception.', format: 'written', category: 'Movies & TV', replies: 11, ts: daysBack(4), mine: false },
+      { id: 'pd3', name: 'pixel_drift', presence: 'online', status: 'making something, not sure what', title: 'Anyone else obsessed with old maps?', desc: 'I spend too much time on David Rumsey. Would love to talk cartography, historical geography, or just weird place names.', format: 'written', category: 'Art', replies: 3, ts: daysBack(6), mine: false },
+      { id: 'pd4', name: 'pixel_drift', presence: 'online', status: 'making something, not sure what', title: 'Cooking for one — what actually works?', desc: 'Every recipe is for four people. I need ideas that scale down without making me sad. Video call while cooking welcome.', format: 'video', category: 'Food', replies: 8, ts: daysBack(9), mine: false },
+      { id: 'tm1', name: 'the_moth_hour', presence: 'online', status: 'night owl, always', title: 'Spooky audiobooks or podcasts for the commute?', desc: 'Not horror — more like eerie, unsettling, makes you glance over your shoulder. Recommendations very welcome.', format: 'audio', category: 'Books', replies: 6, ts: daysBack(2), mine: false },
+      { id: 'tm2', name: 'the_moth_hour', presence: 'online', status: 'night owl, always', title: 'What game genuinely changed how you think?', desc: 'Not your favorite, not the most fun. The one that left you sitting quietly afterward wondering about something.', format: 'video', category: 'Gaming', replies: 9, ts: daysBack(5), mine: false },
+      { id: 'tm3', name: 'the_moth_hour', presence: 'online', status: 'night owl, always', title: 'Learning guitar completely from scratch', desc: 'Just bought a cheap acoustic. Have no idea what I am doing. Looking for someone patient who wants to learn alongside or guide me.', format: 'audio', category: 'Music', replies: 1, ts: daysBack(8), mine: false },
     ],
     requests: [
       // incoming (a few)
@@ -133,7 +143,7 @@ window.FM_REPLIES = [
 ];
 
 // ---- persistence ----
-window.FM_STORE_KEY = 'friendmarket:proto:v10';
+window.FM_STORE_KEY = 'friendmarket:proto:v11';
 window.fmLoad = function () {
   try { const raw = localStorage.getItem(window.FM_STORE_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
   return window.fmSeed();
