@@ -33,7 +33,7 @@
 
 <script type="text/babel" src="fm-app-data.jsx?v=17"></script>
 <script type="text/babel" src="fm-app-ui.jsx?v=10"></script>
-<script type="text/babel" src="fm-app-screens.jsx?v=37"></script>
+<script type="text/babel" src="fm-app-screens.jsx?v=39"></script>
 
 <script type="text/babel">
 const { useState, useEffect, useRef, useCallback } = React;
@@ -55,7 +55,7 @@ function App() {
   const dockRemove = (k) => setDockOrder((d) => d.filter((x) => x !== k));
   const menuRef = useRef(null);
   const [recentMine, setRecentMine] = useState([]); // topics you just posted, shown in Browse this session
-  const [recentRequested, setRecentRequested] = useState(new Set()); // topics you reached out to this session
+  const [recentRequested, setRecentRequested] = useState(new Set()); // topic ids reached out to this session
   const [toasts, setToasts] = useState([]);
   const [resetMode, setResetMode] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null); // topic id pending deletion
@@ -181,7 +181,7 @@ function App() {
       topics: [{ id, name: p.account.username, presence: p.account.presence, status: p.account.status, title: t.title, desc: t.desc, format: t.format, category: t.category, replies: 0, ts: Date.now(), mine: true }, ...p.topics],
     }));
     setRecentMine((m) => [id, ...m]);
-    addToast('📬', 'Your topic is live.');
+    addToast('📬', "Your topic is live.");
   };
 
   // ---- reach out ----
@@ -190,12 +190,12 @@ function App() {
   const onSendRequest = ({ message, also }) => {
     const topic = reachTopic;
     setReachTopic(null); setReachMin(false);
-    setRecentRequested((r) => new Set([...r, topic.title]));
+    setRecentRequested((r) => new Set([...r, topic.id]));
     const reqId = window.fmUid();
     patch((p) => ({
       ...p,
       topics: p.topics.map((t) => t.id === topic.id ? { ...t, replies: (t.replies || 0) + 1 } : t),
-      requests: [{ id: reqId, dir: 'outgoing', name: topic.name, presence: topic.presence, topicTitle: topic.title, category: topic.category, format: topic.format, message, also, status: 'pending', ts: Date.now() }, ...p.requests],
+      requests: [{ id: reqId, dir: 'outgoing', name: topic.name, presence: topic.presence, topicTitle: topic.title, topicId: topic.id, category: topic.category, format: topic.format, message, also, status: 'pending', ts: Date.now() }, ...p.requests],
     }));
     addToast('↗️', 'Request sent to ' + topic.name + '. Hang tight!');
     // simulate them accepting
@@ -317,12 +317,13 @@ function App() {
   }
 
   const blocked = s.blocked || [];
-  const visibleTopics = s.topics.filter((t) => t.mine || !blocked.includes(t.name));
+  const requestedTopicIds = new Set(s.requests.filter((r) => r.dir === 'outgoing' && r.topicId).map((r) => r.topicId));
+  const visibleTopics = s.topics.filter((t) => t.mine || (!blocked.includes(t.name) && (!requestedTopicIds.has(t.id) || recentRequested.has(t.id))));
   const visibleRequests = s.requests.filter((r) => !blocked.includes(r.name));
   const visibleConversations = Object.fromEntries(Object.entries(s.conversations).filter(([, c]) => !blocked.includes(c.name)));
 
   const pendingIncoming = visibleRequests.filter((r) => r.dir === 'incoming' && r.status === 'pending').length;
-  const requestedTitles = recentRequested;
+
   const openChatIds = s.openChats.filter((id) => visibleConversations[id]);
 
   return (
@@ -367,7 +368,7 @@ function App() {
         </div>
         <MeBar account={s.account} onSetStatus={onSetStatus} onSetPresence={onSetPresence} />
 
-        {s.view === 'browse' && <BrowseScreen topics={visibleTopics} recentMine={recentMine} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} requestedTitles={requestedTitles} />}
+        {s.view === 'browse' && <BrowseScreen topics={visibleTopics} recentMine={recentMine} requestedIds={recentRequested} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} />}
         {s.view === 'requests' && <ChatsScreen requests={visibleRequests} conversations={visibleConversations} tab={reqTab} setTab={setReqTab} onAccept={onAccept} onDelete={onDelete} onOpenChat={(id) => { onOpenChat(id); }} />}
         {s.view === 'profile' && <ProfileScreen account={s.account} topics={s.topics} conversations={visibleConversations} onReach={(t) => { setReachTopic(t); setReachMin(false); }} onDelete={onDeleteTopic} theme={theme} onSetTheme={setTheme} onLogout={onLogout} onDeleteAccount={onDeleteAccount} blocked={blocked} onUnblock={onUnblock} />}
       </div>
@@ -378,7 +379,7 @@ function App() {
 
       {/* a user's profile (opened by tapping their name) */}
       {profileUser && <UserProfileModal name={profileUser} topics={s.topics} requests={visibleRequests}
-        conversations={visibleConversations} account={s.account} requestedTitles={requestedTitles} hidden={profileMin}
+        conversations={visibleConversations} account={s.account} hidden={profileMin}
         blocked={blocked} onBlock={onBlock}
         onMinimize={() => { setProfileMin(true); dockAdd('profile'); }}
         onReach={(t) => { setReachTopic(t); setReachMin(false); }} onClose={() => { setProfileUser(null); setProfileMin(false); dockRemove('profile'); }} />}

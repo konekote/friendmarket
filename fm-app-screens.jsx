@@ -360,7 +360,7 @@ function PagedList({ items, perPage, render, empty, containerClass, resetKey }) 
 const FM_SORTS = [['newest', 'Newest first'], ['oldest', 'Oldest first'], ['most', 'Most replies'], ['least', 'Least replies']];
 const FM_PER_PAGE = 10;
 
-function BrowseScreen({ topics, recentMine, onReach, onDelete, requestedTitles }) {
+function BrowseScreen({ topics, recentMine, requestedIds, onReach, onDelete }) {
   const [q, setQ] = React.useState('');
   const [cat, setCat] = React.useState('All');
   const [sort, setSort] = React.useState('newest');
@@ -405,7 +405,7 @@ function BrowseScreen({ topics, recentMine, onReach, onDelete, requestedTitles }
         <PagedList items={list} perPage={FM_PER_PAGE} containerClass="fm-feed"
           resetKey={q + '|' + cat + '|' + sort}
           empty={<div className="fm-empty"><div className="big"><Hug /></div>No topics match. Try a different search or category.</div>}
-          render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach} onDelete={onDelete} requested={requestedTitles && requestedTitles.has(t.title)} />} />
+          render={(t) => <TopicRow key={t.id} topic={t} onReach={onReach} onDelete={onDelete} requested={requestedIds && requestedIds.has(t.id)} />} />
       </div>
     </div>
   );
@@ -729,7 +729,7 @@ function Stat({ n, label }) {
 }
 
 // ---------- USER PROFILE (someone else's) ----------
-function UserProfileModal({ name, topics, requests, conversations, account, requestedTitles, onReach, onClose, hidden, onMinimize, blocked, onBlock }) {
+function UserProfileModal({ name, topics, requests, conversations, account, onReach, onClose, hidden, onMinimize, blocked, onBlock }) {
   const isMe = account && account.username === name;
   const theirTopics = topics.filter((t) => t.name === name && (isMe || !t.mine));
   const fromTopic = topics.find((t) => t.name === name);
@@ -772,7 +772,6 @@ function UserProfileModal({ name, topics, requests, conversations, account, requ
                 render={(t) => (
                   <TopicRow key={t.id} topic={isMe ? { ...t, mine: true } : t}
                     compact={true}
-                    requested={requestedTitles && requestedTitles.has(t.title)}
                     onReach={(tp) => { onClose(); onReach(tp); }} />
                 )} />
             )}
