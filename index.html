@@ -55,6 +55,7 @@ function App() {
   const dockRemove = (k) => setDockOrder((d) => d.filter((x) => x !== k));
   const menuRef = useRef(null);
   const [recentMine, setRecentMine] = useState([]); // topics you just posted, shown in Browse this session
+  const [recentRequested, setRecentRequested] = useState(new Set()); // topics you reached out to this session
   const [toasts, setToasts] = useState([]);
   const [resetMode, setResetMode] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null); // topic id pending deletion
@@ -180,7 +181,7 @@ function App() {
       topics: [{ id, name: p.account.username, presence: p.account.presence, status: p.account.status, title: t.title, desc: t.desc, format: t.format, category: t.category, replies: 0, ts: Date.now(), mine: true }, ...p.topics],
     }));
     setRecentMine((m) => [id, ...m]);
-    addToast('📬', "Your topic is live.");
+    addToast('📬', 'Your topic is live.');
   };
 
   // ---- reach out ----
@@ -189,6 +190,7 @@ function App() {
   const onSendRequest = ({ message, also }) => {
     const topic = reachTopic;
     setReachTopic(null); setReachMin(false);
+    setRecentRequested((r) => new Set([...r, topic.title]));
     const reqId = window.fmUid();
     patch((p) => ({
       ...p,
@@ -282,7 +284,7 @@ function App() {
   };
 
   // navigate between views; clears your just-posted topics from Browse
-  const goView = (v) => { setRecentMine([]); setMenuOpen(false); patch((p) => ({ ...p, view: v })); };
+  const goView = (v) => { setRecentMine([]); setRecentRequested(new Set()); setMenuOpen(false); patch((p) => ({ ...p, view: v })); };
 
   const reset = () => {
     if (!confirm('Reset the prototype to its starting state? Your demo account and chats will be cleared.')) return;
@@ -320,7 +322,7 @@ function App() {
   const visibleConversations = Object.fromEntries(Object.entries(s.conversations).filter(([, c]) => !blocked.includes(c.name)));
 
   const pendingIncoming = visibleRequests.filter((r) => r.dir === 'incoming' && r.status === 'pending').length;
-  const requestedTitles = new Set(visibleRequests.filter((r) => r.dir === 'outgoing').map((r) => r.topicTitle));
+  const requestedTitles = recentRequested;
   const openChatIds = s.openChats.filter((id) => visibleConversations[id]);
 
   return (
